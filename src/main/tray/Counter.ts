@@ -8,19 +8,25 @@ export const TrayCounter = (
 ): MenuItemConstructorOptions[] => {
 	return [
 		{
-			label: 'decrement',
-			type: 'normal',
-			click: () => dispatch({ type: 'COUNTER:DECREMENT' })
-		},
-		{
-			label: `state: ${state.counter ?? 'loading'}`,
-			type: 'normal',
-			click: () => dispatch({ type: 'COUNTER:DECREMENT' })
-		},
-		{
-			label: 'increment',
-			type: 'normal',
-			click: () => dispatch({ type: 'COUNTER:INCREMENT' })
+			label: 'counter',
+			type: 'submenu',
+			submenu: [
+				{
+					label: 'decrement',
+					type: 'normal',
+					click: () => dispatch({ type: 'COUNTER:DECREMENT' })
+				},
+				{
+					label: `state: ${state.counter ?? 'loading'}`,
+					type: 'normal',
+					click: () => dispatch({ type: 'COUNTER:DECREMENT' })
+				},
+				{
+					label: 'increment',
+					type: 'normal',
+					click: () => dispatch({ type: 'COUNTER:INCREMENT' })
+				}
+			]
 		}
 	]
 }
