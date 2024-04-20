@@ -1,12 +1,10 @@
-import { Action, State } from 'src/shared/reducers'
-import { createUseStore } from 'reduxtron/zustand-store'
-import { ThemeSelector } from './ThemeSelector'
-
-export const useStore = createUseStore<State, Action>(window.reduxtron)
-const dispatch = window.reduxtron.dispatch
+import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { ThemeSelector } from 'src/renderer/components/ThemeSelector'
 
 const App = () => {
+	const dispatch = useDispatch()
 	const counter = useStore(x => x.counter)
+
 	const decrement = () => dispatch({ type: 'COUNTER:DECREMENT' })
 	const increment = () => dispatch({ type: 'COUNTER:INCREMENT' })
 	return (
