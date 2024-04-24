@@ -4,21 +4,26 @@ import { Dialog, useDialogStore } from '@ariakit/react/dialog'
 import { Combobox, ComboboxItem, ComboboxProvider, ComboboxPopover } from '@ariakit/react/combobox'
 import { matchSorter } from 'match-sorter'
 import { ALL_THEMES, Theme } from 'zedwind/constants'
+import { useDispatch, useStore } from '../hooks/useStore'
+import { DEFAULT_THEME } from 'src/shared/reducers/settings'
 
 const setDocumentTheme = (theme: Theme) =>
 	document.documentElement.setAttribute('data-theme', theme)
 
-export const ThemeSelector = () => {
+type ThemeSelectorBaseProps = {
+	theme: Theme
+	setTheme: (theme: Theme) => void
+}
+
+export const ThemeSelectorBase = ({ theme, setTheme }: ThemeSelectorBaseProps) => {
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState('')
-	const [previewTheme, setPreviewTheme] = useState<Theme>('Ayu Dark')
-	const [theme, setTheme] = useState(() => previewTheme)
+	const [previewTheme, setPreviewTheme] = useState<Theme | ''>('')
 	const dialog = useDialogStore({ open, setOpen })
-
 	const matches = useMemo(() => matchSorter(ALL_THEMES, search), [search])
 
 	useEffect(() => {
-		if (open) return setDocumentTheme(previewTheme)
+		if (open && previewTheme) return setDocumentTheme(previewTheme)
 		setPreviewTheme(theme)
 		setDocumentTheme(theme)
 	}, [previewTheme, theme, open, setPreviewTheme])
@@ -26,7 +31,7 @@ export const ThemeSelector = () => {
 	return (
 		<>
 			<Button onClick={dialog.show}>theme</Button>
-			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-50' />}>
+			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-0' />}>
 				<div className='p-2 absolute left-0 right-0 top-0 bottom-0'>
 					<ComboboxProvider
 						disclosure={dialog}
@@ -63,4 +68,11 @@ export const ThemeSelector = () => {
 			</Dialog>
 		</>
 	)
+}
+
+export const ThemeSelector = () => {
+	const theme = useStore(x => x.settings?.theme)
+	const dispatch = useDispatch()
+	const setTheme = (payload: Theme) => dispatch({ type: 'SETTINGS:SET_THEME', payload })
+	return <ThemeSelectorBase theme={theme ?? DEFAULT_THEME} setTheme={setTheme} />
 }
