@@ -12,8 +12,19 @@ const statusFetcher: Middleware = _store => next => async () => {
 	}
 }
 
+const branchFetcher: Middleware = _store => next => async () => {
+	try {
+		next({ type: 'GIT:BRANCH@LOADING' })
+		const payload = await simpleGit({ baseDir: __dirname }).branch()
+		return next({ type: 'GIT:BRANCH@LOADED', payload })
+	} catch (e) {
+		return next({ type: 'GIT:BRANCH@ERROR', payload: JSON.stringify(e) })
+	}
+}
+
 const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
-	'GIT:STATUS': statusFetcher
+	'GIT:STATUS': statusFetcher,
+	'GIT:BRANCH': branchFetcher
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {

@@ -1,19 +1,27 @@
 import { Reducer } from 'redux'
-import { StatusResult } from 'simple-git'
+import { StatusResult, BranchSummary } from 'simple-git'
 
 export type GitState = 'initial' | 'idle' | 'loading' | 'revalidating' | 'error'
-export type GitStatus = Omit<StatusResult, 'isClean'> & { isClean: boolean }
-export type Git = { status: { state: GitState; data: GitStatus | null; error: string | null } }
+export type GitStatusData = Omit<StatusResult, 'isClean'> & { isClean: boolean }
+export type GitStatus = { state: GitState; data: GitStatusData | null; error: string | null }
+export type GitBranch = { state: GitState; data: BranchSummary | null; error: string | null }
+export type Git = { status: GitStatus; branch: GitBranch }
+
 export type GitAction =
 	| { type: 'GIT:STATUS' }
 	| { type: 'GIT:STATUS@LOADING' }
 	| { type: 'GIT:STATUS@LOADED'; payload: Git['status']['data'] }
 	| { type: 'GIT:STATUS@ERROR'; payload: Git['status']['error'] }
+	| { type: 'GIT:BRANCH' }
+	| { type: 'GIT:BRANCH@LOADING' }
+	| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
+	| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
 
-export const gitReducer: Reducer<Git, GitAction> = (
-	state = { status: { state: 'initial', data: null, error: null } },
-	action
-) => {
+const INITIAL_GIT_STATUS: GitStatus = { state: 'initial', data: null, error: null }
+const INITIAL_GIT_BRANCH: GitBranch = { state: 'initial', data: null, error: null }
+const INITIAL_STATE: Git = { status: INITIAL_GIT_STATUS, branch: INITIAL_GIT_BRANCH }
+
+export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, action) => {
 	switch (action.type) {
 		case 'GIT:STATUS@LOADING':
 			return {
@@ -29,6 +37,22 @@ export const gitReducer: Reducer<Git, GitAction> = (
 			return {
 				...state,
 				status: { state: 'error', error: action.payload, data: null }
+			}
+
+		case 'GIT:BRANCH@LOADING':
+			return {
+				...state,
+				branch: { ...state.branch, state: state.branch?.data ? 'revalidating' : 'loading' }
+			}
+		case 'GIT:BRANCH@LOADED':
+			return {
+				...state,
+				branch: { state: 'idle', error: null, data: action.payload }
+			}
+		case 'GIT:BRANCH@ERROR':
+			return {
+				...state,
+				branch: { state: 'error', error: action.payload, data: null }
 			}
 		default:
 			return state
