@@ -8,3 +8,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 		<App />
 	</React.StrictMode>
 )
+
+const onWindowFocus = () => window.reduxtron.dispatch({ type: 'GIT:REFRESH' })
+window.addEventListener('focus', onWindowFocus)

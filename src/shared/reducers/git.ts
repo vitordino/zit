@@ -16,6 +16,8 @@ export type GitAction =
 	| { type: 'GIT:BRANCH@LOADING' }
 	| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
 	| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
+	// the combination of all fetchers above
+	| { type: 'GIT:REFRESH' }
 
 const INITIAL_GIT_STATUS: GitStatus = { state: 'initial', data: null, error: null }
 const INITIAL_GIT_BRANCH: GitBranch = { state: 'initial', data: null, error: null }

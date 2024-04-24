@@ -2,7 +2,9 @@ import simpleGit from 'simple-git'
 import type { Middleware } from 'src/shared/reducers'
 import { GitAction } from 'src/shared/reducers/git'
 
-const statusFetcher: Middleware = _store => next => async () => {
+const statusFetcher: Middleware = store => next => async () => {
+	// if loading, don’t fire a second fetch request — next(action)
+	if (store.getState().git.status.state === 'loading') return next({ type: 'GIT:STATUS@LOADING' })
 	try {
 		next({ type: 'GIT:STATUS@LOADING' })
 		const status = await simpleGit({ baseDir: __dirname }).status()
@@ -12,7 +14,9 @@ const statusFetcher: Middleware = _store => next => async () => {
 	}
 }
 
-const branchFetcher: Middleware = _store => next => async () => {
+const branchFetcher: Middleware = store => next => async () => {
+	// if loading, don’t fire a second fetch request — next(action)
+	if (store.getState().git.branch.state === 'loading') return next({ type: 'GIT:STATUS@LOADING' })
 	try {
 		next({ type: 'GIT:BRANCH@LOADING' })
 		const payload = await simpleGit({ baseDir: __dirname }).branch()
@@ -22,7 +26,13 @@ const branchFetcher: Middleware = _store => next => async () => {
 	}
 }
 
+const refreshFetcher: Middleware = store => next => async action => {
+	statusFetcher(store)(next)(action)
+	return branchFetcher(store)(next)(action)
+}
+
 const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
+	'GIT:REFRESH': refreshFetcher,
 	'GIT:STATUS': statusFetcher,
 	'GIT:BRANCH': branchFetcher
 }
