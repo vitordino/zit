@@ -1,6 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import { reducer, State, Action, Store } from '../shared/reducers'
+import { reducer, State, Action, Store } from 'src/shared/reducers'
+import { middleware } from 'src/main/middleware'
 
-// @ts-expect-error ignore for now
-export const store: Store = configureStore<State, Action>({ reducer })
+export const store: Store = configureStore<State, Action>({
+	// @ts-expect-error ignore for now
+	reducer,
+	// @ts-expect-error ignore for now
+	middleware: x => [...x(), ...middleware]
+})

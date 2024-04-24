@@ -2,7 +2,6 @@ import { Menu, Tray, app, nativeImage } from 'electron'
 
 import type { Dispatch, State } from 'src/shared/reducers'
 import image from 'src/main/tray/tray.png'
-import { TrayCounter } from 'src/main/tray/Counter'
 import { TraySettings } from 'src/main/tray/Settings'
 
 const trayIcon = nativeImage.createFromDataURL(image).resize({
@@ -29,7 +28,6 @@ class SystemTray {
 		if (!this.instance) this.instance = new Tray(trayIcon)
 		if (!this.state || !this.dispatch) return
 		const contextMenu = Menu.buildFromTemplate([
-			...TrayCounter(this.state, this.dispatch),
 			...TraySettings(this.state, this.dispatch),
 			{ type: 'separator' },
 			{ label: 'quit', click: app.quit }

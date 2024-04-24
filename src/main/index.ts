@@ -13,7 +13,7 @@ tray.setState(store.getState())
 tray.setDispatch(store.dispatch)
 store.subscribe(() => tray.setState(store.getState()))
 
-function createWindow(): void {
+const createWindow = () => {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
 		width: 900,
@@ -69,7 +69,7 @@ app.whenReady().then(() => {
 	createWindow()
 	tray.create()
 
-	app.on('activate', function () {
+	app.on('activate', () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		if (BrowserWindow.getAllWindows().length === 0) createWindow()

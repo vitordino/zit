@@ -1,15 +1,16 @@
 import { combineReducers, Dispatch as BaseDispatch, Reducer, Observable, AnyAction } from 'redux'
 
-import { counterReducer, CounterAction } from './counter'
 import { settingsReducer, Settings, SettingsAction } from './settings'
+import { gitReducer, Git, GitAction } from './git'
 
-export const reducer = combineReducers({ counter: counterReducer, settings: settingsReducer })
+export const reducer = combineReducers({
+	settings: settingsReducer,
+	git: gitReducer
+})
 
-type ActionOrAnyAction = AnyAction | CounterAction | SettingsAction
+export type Action = SettingsAction | GitAction
 
-export type Action = Exclude<ActionOrAnyAction, { type: '' }>
-
-export type State = { counter: number; settings: Settings }
+export type State = { settings: Settings; git: Git }
 export type Dispatch = BaseDispatch<Action>
 export type Subscribe = (listener: () => void) => () => void
 
@@ -25,4 +26,4 @@ type MiddlewareStore = Pick<Store, 'getState' | 'dispatch'>
 
 export type Middleware<A extends AnyAction = Action> = (
 	store: MiddlewareStore
-) => (next: Dispatch) => (action: A) => Promise<Action>
+) => (next: Dispatch) => (action: A) => Promise<A>

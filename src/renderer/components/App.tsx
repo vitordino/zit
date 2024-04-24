@@ -3,16 +3,13 @@ import { ThemeSelector } from 'src/renderer/components/ThemeSelector'
 
 const App = () => {
 	const dispatch = useDispatch()
-	const counter = useStore(x => x.counter)
-
-	const decrement = () => dispatch({ type: 'COUNTER:DECREMENT' })
-	const increment = () => dispatch({ type: 'COUNTER:INCREMENT' })
+	const state = useStore(x => x)
+	const getStatus = () => dispatch({ type: 'GIT:STATUS' })
 	return (
-		<main>
-			<button onClick={decrement}>decrement</button>
-			{counter || 0}
-			<button onClick={increment}>increment</button>
+		<main className='flex-col h-screen overflow-auto'>
 			<ThemeSelector />
+			<button onClick={getStatus}>get status</button>
+			<pre>{JSON.stringify(state, null, 2)}</pre>
 		</main>
 	)
 }

@@ -27,6 +27,7 @@
 		"@reduxjs/toolkit": "^2.2.2",
 		"match-sorter": "^6.3.4",
 		"reduxtron": "0.0.16",
+		"simple-git": "^3.24.0",
 		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
