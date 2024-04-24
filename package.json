@@ -25,9 +25,11 @@
 		"@electron-toolkit/preload": "^3.0.0",
 		"@electron-toolkit/utils": "^3.0.0",
 		"@reduxjs/toolkit": "^2.2.2",
+		"clsx": "^2.1.1",
 		"match-sorter": "^6.3.4",
 		"reduxtron": "0.0.16",
 		"simple-git": "^3.24.0",
+		"tailwind-merge": "^2.3.0",
 		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
