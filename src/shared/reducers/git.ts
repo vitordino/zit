@@ -1,11 +1,12 @@
 import { Reducer } from 'redux'
-import { StatusResult, BranchSummary } from 'simple-git'
+import { StatusResult, BranchSummary, LogResult } from 'simple-git'
 
-export type GitState = 'initial' | 'idle' | 'loading' | 'revalidating' | 'error'
+export type FetchState = 'initial' | 'idle' | 'loading' | 'revalidating' | 'error'
 export type GitStatusData = Omit<StatusResult, 'isClean'> & { isClean: boolean }
-export type GitStatus = { state: GitState; data: GitStatusData | null; error: string | null }
-export type GitBranch = { state: GitState; data: BranchSummary | null; error: string | null }
-export type Git = { status: GitStatus; branch: GitBranch }
+export type GitStatus = { state: FetchState; data: GitStatusData | null; error: string | null }
+export type GitBranch = { state: FetchState; data: BranchSummary | null; error: string | null }
+export type GitLog = { state: FetchState; data: LogResult | null; error: string | null }
+export type Git = { status: GitStatus; branch: GitBranch; log: GitLog }
 
 export type GitAction =
 	| { type: 'GIT:STATUS' }
@@ -16,6 +17,10 @@ export type GitAction =
 	| { type: 'GIT:BRANCH@LOADING' }
 	| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
 	| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
+	| { type: 'GIT:LOG' }
+	| { type: 'GIT:LOG@LOADING' }
+	| { type: 'GIT:LOG@LOADED'; payload: Git['log']['data'] }
+	| { type: 'GIT:LOG@ERROR'; payload: Git['log']['error'] }
 	// the combination of all fetchers above
 	| { type: 'GIT:REFRESH' }
 	// commands
@@ -26,9 +31,8 @@ export type GitAction =
 	| { type: 'GIT:UNSTAGE_ALL' }
 	| { type: 'GIT:COMMIT'; payload: string }
 
-const INITIAL_GIT_STATUS: GitStatus = { state: 'initial', data: null, error: null }
-const INITIAL_GIT_BRANCH: GitBranch = { state: 'initial', data: null, error: null }
-const INITIAL_STATE: Git = { status: INITIAL_GIT_STATUS, branch: INITIAL_GIT_BRANCH }
+const INITIAL = { state: 'initial', data: null, error: null } as const
+const INITIAL_STATE: Git = { status: INITIAL, branch: INITIAL, log: INITIAL }
 
 export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, action) => {
 	switch (action.type) {
@@ -63,6 +67,23 @@ export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, actio
 				...state,
 				branch: { state: 'error', error: action.payload, data: null },
 			}
+
+		case 'GIT:LOG@LOADING':
+			return {
+				...state,
+				log: { ...state.log, state: state.log?.data ? 'revalidating' : 'loading' },
+			}
+		case 'GIT:LOG@LOADED':
+			return {
+				...state,
+				log: { state: 'idle', error: null, data: action.payload },
+			}
+		case 'GIT:LOG@ERROR':
+			return {
+				...state,
+				log: { state: 'error', error: action.payload, data: null },
+			}
+
 		default:
 			return state
 	}

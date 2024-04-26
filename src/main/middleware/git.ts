@@ -29,7 +29,7 @@ const statusFetcher: Middleware = store => next => async () => {
 
 const branchFetcher: Middleware = store => next => async () => {
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git.branch.state === 'loading') return next({ type: 'GIT:STATUS@LOADING' })
+	if (store.getState().git.branch.state === 'loading') return next({ type: 'GIT:BRANCH@LOADING' })
 	try {
 		next({ type: 'GIT:BRANCH@LOADING' })
 		const branch = await simpleGit({ baseDir }).branchLocal()
@@ -39,8 +39,21 @@ const branchFetcher: Middleware = store => next => async () => {
 	}
 }
 
+const logFetcher: Middleware = store => next => async () => {
+	// if loading, don’t fire a second fetch request — next(action)
+	if (store.getState().git.log.state === 'loading') return next({ type: 'GIT:LOG@LOADING' })
+	try {
+		next({ type: 'GIT:LOG@LOADING' })
+		const payload = await simpleGit({ baseDir }).log({ maxCount: 12, multiLine: false })
+		return next({ type: 'GIT:LOG@LOADED', payload })
+	} catch (e) {
+		return next({ type: 'GIT:LOG@ERROR', payload: JSON.stringify(e) })
+	}
+}
+
 const refreshFetcher: Middleware = store => next => async action => {
 	statusFetcher(store)(next)(action)
+	logFetcher(store)(next)(action)
 	return branchFetcher(store)(next)(action)
 }
 
@@ -143,6 +156,7 @@ const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:REFRESH': refreshFetcher,
 	'GIT:STATUS': statusFetcher,
 	'GIT:BRANCH': branchFetcher,
+	'GIT:BRANCH': logFetcher,
 	'GIT:CHANGE_BRANCH': branchSwitcher,
 	'GIT:STAGE': fileStager,
 	'GIT:STAGE_ALL': allStager,
