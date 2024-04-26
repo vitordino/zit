@@ -16,7 +16,7 @@ type FileItemProps = FileStatusResult & { onClick?: () => void }
 const FileItem = ({ path, working_dir, index, onClick }: FileItemProps) => (
 	<CompositeItem
 		itemID={path}
-		className='w-full text-left outline-none group-focus-visible:data-[active-item="true"]:bg-element-selected flex items-stretch'
+		className='w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected flex items-stretch'
 		onClick={onClick}
 	>
 		<div className='border-r border-border p-1 text-center w-8 whitespace-pre'>
