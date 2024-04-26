@@ -8,7 +8,8 @@ const DebugPanel = ({ children }: { children: ReactNode }) => {
 	const getBranches = () => dispatch({ type: 'GIT:BRANCH' })
 	return (
 		<>
-			<div className='absolute h-screen w-1/2 overflow-auto border-border border-r bg-panel-background'>
+			<div className='w-1/2 flex h-full flex-col overflow-auto'>{children}</div>
+			<div className='absolute h-screen ml-[50%] w-1/2 overflow-auto border-border border-l bg-panel-background'>
 				<button className='block' onClick={getStatus}>
 					get status
 				</button>
@@ -17,7 +18,6 @@ const DebugPanel = ({ children }: { children: ReactNode }) => {
 				</button>
 				<pre className='select-all pointer-events-auto'>{JSON.stringify(state, null, 2)}</pre>
 			</div>
-			<div className='w-1/2 ml-[50%] flex h-full flex-col overflow-auto'>{children}</div>
 		</>
 	)
 }
