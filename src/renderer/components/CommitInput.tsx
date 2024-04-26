@@ -10,7 +10,7 @@ export const CommitInputBase = ({ onCommit, commitDisabled }: CommitInputBasePro
 	}
 	return (
 		<form
-			className='w-full flex items-stretch bg-editor-subheader-background border-t border-border'
+			className='w-full flex items-stretch bg-editor-subheader-background ring-1 ring-border'
 			onSubmit={onSubmit}
 		>
 			<textarea

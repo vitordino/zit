@@ -10,10 +10,7 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 	if (!log?.all?.length) return null
 	return (
 		<CompositeProvider focusLoop virtualFocus>
-			<Composite
-				className='group max-h-24 overflow-auto border-border border-t outline-none'
-				autoFocus
-			>
+			<Composite className='group max-h-24 overflow-auto outline-none' autoFocus>
 				{log.all.map((x, i) => (
 					<CompositeItem
 						className='flex content-between items-center w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected px-2 text-xs '
