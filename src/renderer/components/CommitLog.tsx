@@ -11,7 +11,7 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 	if (!log?.all?.length) return null
 	return (
 		<CompositeProvider focusLoop virtualFocus>
-			<Composite className='group max-h-24 overflow-auto outline-none' autoFocus>
+			<Composite className='group max-h-24 overflow-auto outline-none'>
 				{log.all.map((x, i) => (
 					<CompositeItem
 						className='flex content-between items-center w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected px-2 text-xs '
@@ -36,12 +36,13 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 }
 
 export const CommitLog = () => {
-	const [_, setSearch] = useSearchParams()
+	const [search, setSearch] = useSearchParams()
 	const log = useStore(x => x.git?.log?.data)
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => {
 		setSearch({ message: log?.latest?.message ?? '' })
 		dispatch({ type: 'GIT:UNDO_COMMIT', payload })
 	}
+	if (search.get('log') !== 'true') return null
 	return <CommitLogBase log={log} onUndo={onUndo} />
 }

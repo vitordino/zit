@@ -1,6 +1,7 @@
 import { FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useDispatch, useStore } from '../hooks/useStore'
+import { CommitLineButton } from './Button'
 
 type CommitInputBaseProps = {
 	onCommit?: (message: string) => void
@@ -19,12 +20,9 @@ export const CommitInputBase = ({
 		onCommit?.(message)
 	}
 	return (
-		<form
-			className='w-full flex items-stretch bg-editor-subheader-background ring-1 ring-border'
-			onSubmit={onSubmit}
-		>
+		<form className='w-full flex items-stretch bg-editor-subheader-background' onSubmit={onSubmit}>
 			<textarea
-				className='flex-1 bg-editor-subheader-background resize-none outline-none p-2 placeholder:text-text-muted'
+				className='flex-1 bg-editor-subheader-background resize-none outline-none p-2 placeholder:text-text-muted ring-1 ring-border'
 				value={message}
 				onChange={e => setMessage(e.target.value)}
 				placeholder='commit message'
@@ -34,13 +32,9 @@ export const CommitInputBase = ({
 					setMessage('')
 				}}
 			/>
-			<button
-				type='submit'
-				disabled={!message.length || commitDisabled}
-				className='border-l disabled:text-text-disabled border-border outline-none p-2 hover:bg-background active:bg-element-active focus-visible:bg-element-active'
-			>
+			<CommitLineButton type='submit' disabled={!message.length || commitDisabled}>
 				commit
-			</button>
+			</CommitLineButton>
 		</form>
 	)
 }
