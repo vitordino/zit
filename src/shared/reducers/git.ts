@@ -30,6 +30,7 @@ export type GitAction =
 	| { type: 'GIT:UNSTAGE'; payload: string }
 	| { type: 'GIT:UNSTAGE_ALL' }
 	| { type: 'GIT:COMMIT'; payload: string }
+	| { type: 'GIT:UNDO_COMMIT'; payload: string }
 
 const INITIAL = { state: 'initial', data: null, error: null } as const
 const INITIAL_STATE: Git = { status: INITIAL, branch: INITIAL, log: INITIAL }

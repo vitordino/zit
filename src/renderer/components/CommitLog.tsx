@@ -1,0 +1,45 @@
+import { CompositeProvider, Composite, CompositeItem } from '@ariakit/react/composite'
+
+import { GitLog } from 'src/shared/reducers/git'
+import { getRelativeTimeString } from 'src/shared/lib/time'
+import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+
+type CommitLogBaseProps = { log?: GitLog['data']; onUndo: (hex: string) => void }
+export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
+	// [TODO]: empty state
+	if (!log?.all?.length) return null
+	return (
+		<CompositeProvider focusLoop virtualFocus>
+			<Composite
+				className='group max-h-24 overflow-auto border-border border-t outline-none'
+				autoFocus
+			>
+				{log.all.map((x, i) => (
+					<CompositeItem
+						className='flex content-between items-center w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected px-2 text-xs '
+						render={y => <div {...y} />}
+						key={x.hash}
+					>
+						<div className='flex-1 leading-6 py-1'>{x.message}</div>
+						{!i && (
+							<button
+								onClick={() => onUndo(x.hash)}
+								className='hover:bg-error-background text-error self-stretch px-3 mx-2'
+							>
+								undo
+							</button>
+						)}
+						<time>{getRelativeTimeString(new Date(x.date))}</time>
+					</CompositeItem>
+				))}
+			</Composite>
+		</CompositeProvider>
+	)
+}
+
+export const CommitLog = () => {
+	const log = useStore(x => x.git?.log?.data)
+	const dispatch = useDispatch()
+	const onUndo = (payload: string) => dispatch({ type: 'GIT:UNDO_COMMIT', payload })
+	return <CommitLogBase log={log} />
+}
