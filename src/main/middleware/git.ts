@@ -31,10 +31,31 @@ const refreshFetcher: Middleware = store => next => async action => {
 	return branchFetcher(store)(next)(action)
 }
 
+const branchSwitcher: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:CHANGE_BRANCH') return next(action)
+	const isClean = store.getState().git?.status?.data?.isClean
+	if (!isClean)
+		return next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: 'branch is not clean, commit or stash before changing branches' }
+		})
+	try {
+		await simpleGit({ baseDir: __dirname }).checkout(action.payload)
+		return branchFetcher(store)(next)(action)
+	} catch {
+		return next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: 'issue while changing branches' }
+		})
+		return branchFetcher(store)(next)(action)
+	}
+}
+
 const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:REFRESH': refreshFetcher,
 	'GIT:STATUS': statusFetcher,
-	'GIT:BRANCH': branchFetcher
+	'GIT:BRANCH': branchFetcher,
+	'GIT:CHANGE_BRANCH': branchSwitcher
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {

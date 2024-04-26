@@ -17,7 +17,7 @@ export const App = () => {
 					<button className='block' onClick={getBranches}>
 						get branches
 					</button>
-					<pre>{JSON.stringify(state, null, 2)}</pre>
+					<pre className='select-all pointer-events-auto'>{JSON.stringify(state, null, 2)}</pre>
 				</div>
 			</main>
 		</>

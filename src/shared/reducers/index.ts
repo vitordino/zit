@@ -1,16 +1,17 @@
-import { combineReducers, Dispatch as BaseDispatch, Reducer, Observable, AnyAction } from 'redux'
+import { combineReducers, Dispatch as BaseDispatch, Reducer, Observable, AnyAction, ActionFromReducer } from 'redux'
 
-import { settingsReducer, Settings, SettingsAction } from './settings'
-import { gitReducer, Git, GitAction } from './git'
+import { settingsReducer } from './settings'
+import { gitReducer } from './git'
+import { notificationsReducer } from './notifications'
 
 export const reducer = combineReducers({
 	settings: settingsReducer,
-	git: gitReducer
+	git: gitReducer,
+	notifications: notificationsReducer
 })
 
-export type Action = SettingsAction | GitAction
-
-export type State = { settings: Settings; git: Git }
+export type Action = ActionFromReducer<typeof reducer>
+export type State = ReturnType<typeof reducer>
 export type Dispatch = BaseDispatch<Action>
 export type Subscribe = (listener: () => void) => () => void
 
