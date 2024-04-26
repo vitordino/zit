@@ -56,7 +56,7 @@ export const FilePanelBase = ({
 }: FilePanelBaseProps) => {
 	const unstaged = status?.data?.files.filter(x => !status.data?.staged.includes(x.path))
 	const staged = status?.data?.files.filter(x => status.data?.staged.includes(x.path))
-	if (!staged?.length && !unstaged?.length) return null
+	if (!staged?.length && !unstaged?.length) return <div className='flex-1' />
 	return (
 		<CompositeProvider focusLoop virtualFocus>
 			<Composite className='group flex-1 outline-none overflow-auto scroll-pt-8' autoFocus>
