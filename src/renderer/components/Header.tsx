@@ -12,5 +12,6 @@ export const Header = () => (
 		<div className='drag-region h-full flex-1'></div>
 		<ThemeSelector />
 		<div className='drag-region h-full w-4'></div>
+		<div className='h-[1px] w-full absolute left-0 bottom-0 bg-border' />
 	</div>
 )
