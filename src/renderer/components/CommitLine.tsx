@@ -12,7 +12,7 @@ type CommitLineBaseProps = {
 }
 export const CommitLineBase = ({ log, toggleLog, behind, ahead }: CommitLineBaseProps) => (
 	<div className='flex'>
-		<CommitLineButton data-active={log} onClick={toggleLog} className='-ml-[1px]'>
+		<CommitLineButton data-active={log} onClick={toggleLog}>
 			log
 		</CommitLineButton>
 		<CommitInput />
