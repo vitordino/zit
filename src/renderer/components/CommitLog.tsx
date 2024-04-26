@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import { CompositeProvider, Composite, CompositeItem } from '@ariakit/react/composite'
 
 import { GitLog } from 'src/shared/reducers/git'
@@ -35,8 +36,12 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 }
 
 export const CommitLog = () => {
+	const [_, setSearch] = useSearchParams()
 	const log = useStore(x => x.git?.log?.data)
 	const dispatch = useDispatch()
-	const onUndo = (payload: string) => dispatch({ type: 'GIT:UNDO_COMMIT', payload })
+	const onUndo = (payload: string) => {
+		setSearch({ message: log?.latest?.message ?? '' })
+		dispatch({ type: 'GIT:UNDO_COMMIT', payload })
+	}
 	return <CommitLogBase log={log} onUndo={onUndo} />
 }

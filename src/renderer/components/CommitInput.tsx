@@ -1,9 +1,19 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useDispatch, useStore } from '../hooks/useStore'
 
-type CommitInputBaseProps = { onCommit?: (message: string) => void; commitDisabled?: boolean }
-export const CommitInputBase = ({ onCommit, commitDisabled }: CommitInputBaseProps) => {
-	const [message, setMessage] = useState('')
+type CommitInputBaseProps = {
+	onCommit?: (message: string) => void
+	commitDisabled?: boolean
+	message: string
+	setMessage: (message: string) => void
+}
+export const CommitInputBase = ({
+	onCommit,
+	commitDisabled,
+	message,
+	setMessage,
+}: CommitInputBaseProps) => {
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		onCommit?.(message)
@@ -36,8 +46,20 @@ export const CommitInputBase = ({ onCommit, commitDisabled }: CommitInputBasePro
 }
 
 export const CommitInput = () => {
+	const [search, setSearch] = useSearchParams()
 	const commitDisabled = useStore(x => !x.git?.status.data?.staged.length)
 	const dispatch = useDispatch()
 	const onCommit = (payload: string) => dispatch({ type: 'GIT:COMMIT', payload })
-	return <CommitInputBase onCommit={onCommit} commitDisabled={commitDisabled} />
+
+	const message = search.get('message') ?? ''
+	const setMessage = (message: string) => setSearch({ message })
+
+	return (
+		<CommitInputBase
+			onCommit={onCommit}
+			commitDisabled={commitDisabled}
+			message={message}
+			setMessage={setMessage}
+		/>
+	)
 }
