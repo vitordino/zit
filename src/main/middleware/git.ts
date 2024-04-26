@@ -177,6 +177,42 @@ const undoCommit: Middleware = store => next => async action => {
 	}
 }
 
+const push: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:PUSH') return next(action)
+	try {
+		const result = await simpleGit({ baseDir }).push()
+		console.log({ result })
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	} catch (e) {
+		console.log({ e })
+		next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: `issue while pushing` },
+		})
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	}
+}
+
+const pull: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:PULL') return next(action)
+	try {
+		const result = await simpleGit({ baseDir }).pull()
+		console.log({ result })
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	} catch (e) {
+		console.log({ e })
+		next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: `issue while pushing` },
+		})
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	}
+}
+
 const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:REFRESH': refreshFetcher,
 	'GIT:STATUS': statusFetcher,
@@ -189,6 +225,8 @@ const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:UNSTAGE_ALL': allUnstager,
 	'GIT:COMMIT': commit,
 	'GIT:UNDO_COMMIT': undoCommit,
+	'GIT:PUSH': push,
+	'GIT:PULL': pull,
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {
