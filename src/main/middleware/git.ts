@@ -1,20 +1,7 @@
-import simpleGit, { BranchSummary, FileStatusResult } from 'simple-git'
+import simpleGit from 'simple-git'
+import { stripBranchSummary, stripFileStatusResult } from 'src/shared/lib/strip'
 import type { Middleware } from 'src/shared/reducers'
 import { GitAction } from 'src/shared/reducers/git'
-
-const stripFileStatusResult = (input: FileStatusResult) => ({
-	from: input.from,
-	path: input.path,
-	index: input.index,
-	working_dir: input.working_dir
-})
-
-const stripBranchSummary = (input: BranchSummary) => ({
-	all: input.all,
-	branches: input.branches,
-	current: input.current,
-	detached: input.detached
-})
 
 const statusFetcher: Middleware = store => next => async () => {
 	// if loading, don’t fire a second fetch request — next(action)
