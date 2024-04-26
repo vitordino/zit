@@ -1,5 +1,5 @@
 {
-	"name": "reduxtron-react-boilerplate",
+	"name": "zit",
 	"version": "0.0.1",
 	"description": "A Typescript/Redux application managing electron processes",
 	"main": "./out/main/index.js",

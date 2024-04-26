@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: 'reduxtron-react-boilerplate'
+productName: 'zit'
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: 'reduxtron-react-boilerplate'
+  executableName: 'zit'
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
