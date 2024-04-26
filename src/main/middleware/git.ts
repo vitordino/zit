@@ -1,14 +1,35 @@
-import simpleGit from 'simple-git'
+import simpleGit, { BranchSummary, FileStatusResult } from 'simple-git'
 import type { Middleware } from 'src/shared/reducers'
 import { GitAction } from 'src/shared/reducers/git'
+
+const stripFileStatusResult = (input: FileStatusResult) => ({
+	from: input.from,
+	path: input.path,
+	index: input.index,
+	working_dir: input.working_dir
+})
+
+const stripBranchSummary = (input: BranchSummary) => ({
+	all: input.all,
+	branches: input.branches,
+	current: input.current,
+	detached: input.detached
+})
 
 const statusFetcher: Middleware = store => next => async () => {
 	// if loading, don’t fire a second fetch request — next(action)
 	if (store.getState().git.status.state === 'loading') return next({ type: 'GIT:STATUS@LOADING' })
 	try {
 		next({ type: 'GIT:STATUS@LOADING' })
-		const status = await simpleGit({ baseDir: __dirname }).status()
-		return next({ type: 'GIT:STATUS@LOADED', payload: { ...status, isClean: status.isClean() } })
+		const { isClean, ...status } = await simpleGit({ baseDir: __dirname }).status()
+		return next({
+			type: 'GIT:STATUS@LOADED',
+			payload: {
+				...status,
+				files: status.files.map(stripFileStatusResult),
+				isClean: isClean()
+			}
+		})
 	} catch (e) {
 		return next({ type: 'GIT:STATUS@ERROR', payload: JSON.stringify(e) })
 	}
@@ -19,8 +40,8 @@ const branchFetcher: Middleware = store => next => async () => {
 	if (store.getState().git.branch.state === 'loading') return next({ type: 'GIT:STATUS@LOADING' })
 	try {
 		next({ type: 'GIT:BRANCH@LOADING' })
-		const payload = await simpleGit({ baseDir: __dirname }).branch()
-		return next({ type: 'GIT:BRANCH@LOADED', payload })
+		const branch = await simpleGit({ baseDir: __dirname }).branchLocal()
+		return next({ type: 'GIT:BRANCH@LOADED', payload: stripBranchSummary(branch) })
 	} catch (e) {
 		return next({ type: 'GIT:BRANCH@ERROR', payload: JSON.stringify(e) })
 	}
