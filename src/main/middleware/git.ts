@@ -1,6 +1,6 @@
 import { join } from 'path'
 import simpleGit, { ResetMode } from 'simple-git'
-import { stripBranchSummary, stripFileStatusResult } from 'src/shared/lib/strip'
+import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/shared/lib/strip'
 import type { Middleware } from 'src/shared/reducers'
 import { GitAction } from 'src/shared/reducers/git'
 
@@ -44,8 +44,8 @@ const logFetcher: Middleware = store => next => async () => {
 	if (store.getState().git.log.state === 'loading') return next({ type: 'GIT:LOG@LOADING' })
 	try {
 		next({ type: 'GIT:LOG@LOADING' })
-		const payload = await simpleGit({ baseDir }).log({ maxCount: 12, multiLine: false })
-		return next({ type: 'GIT:LOG@LOADED', payload })
+		const log = await simpleGit({ baseDir }).log({ maxCount: 12, multiLine: false })
+		return next({ type: 'GIT:LOG@LOADED', payload: stripLogResult(log) })
 	} catch (e) {
 		return next({ type: 'GIT:LOG@ERROR', payload: JSON.stringify(e) })
 	}
