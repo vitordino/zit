@@ -1,5 +1,6 @@
 import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
 import { Header } from 'src/renderer/components/Header'
+import { FilePanel } from './FilePanel'
 
 export const App = () => {
 	const dispatch = useDispatch()
@@ -18,6 +19,9 @@ export const App = () => {
 						get branches
 					</button>
 					<pre className='select-all pointer-events-auto'>{JSON.stringify(state, null, 2)}</pre>
+				</div>
+				<div className='absolute h-screen w-1/2 left-1/2 overflow-auto'>
+					<FilePanel />
 				</div>
 			</main>
 		</>

@@ -20,6 +20,10 @@ export type GitAction =
 	| { type: 'GIT:REFRESH' }
 	// commands
 	| { type: 'GIT:CHANGE_BRANCH'; payload: string }
+	| { type: 'GIT:STAGE'; payload: string }
+	| { type: 'GIT:STAGE_ALL' }
+	| { type: 'GIT:UNSTAGE'; payload: string }
+	| { type: 'GIT:UNSTAGE_ALL' }
 
 const INITIAL_GIT_STATUS: GitStatus = { state: 'initial', data: null, error: null }
 const INITIAL_GIT_BRANCH: GitBranch = { state: 'initial', data: null, error: null }
