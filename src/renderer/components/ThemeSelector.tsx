@@ -1,11 +1,12 @@
 import { startTransition, useEffect, useMemo, useState } from 'react'
-import { Button } from '@ariakit/react/button'
 import { Dialog, useDialogStore } from '@ariakit/react/dialog'
 import { Combobox, ComboboxItem, ComboboxProvider, ComboboxPopover } from '@ariakit/react/combobox'
 import { matchSorter } from 'match-sorter'
 import { ALL_THEMES, Theme } from 'zedwind/constants'
-import { useDispatch, useStore } from '../hooks/useStore'
+
 import { DEFAULT_THEME } from 'src/shared/reducers/settings'
+import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { StatusBarButton } from 'src/renderer/components/Button'
 
 const setDocumentTheme = (theme: Theme) =>
 	document.documentElement.setAttribute('data-theme', theme)
@@ -30,8 +31,8 @@ export const ThemeSelectorBase = ({ theme, setTheme }: ThemeSelectorBaseProps) =
 
 	return (
 		<>
-			<Button onClick={dialog.show}>theme</Button>
-			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-0' />}>
+			<StatusBarButton onClick={dialog.show}>theme</StatusBarButton>
+			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-50' />}>
 				<div className='p-2 absolute left-0 right-0 top-0 bottom-0'>
 					<ComboboxProvider
 						disclosure={dialog}

@@ -20,6 +20,10 @@ const createWindow = () => {
 		height: 670,
 		show: false,
 		autoHideMenuBar: true,
+		titleBarStyle: 'hiddenInset',
+		trafficLightPosition: { x: 9, y: 9 },
+		titleBarOverlay: false,
+		frame: false,
 		...(process.platform === 'linux' ? { icon } : {}),
 		webPreferences: {
 			preload: join(__dirname, '../preload/index.js'),

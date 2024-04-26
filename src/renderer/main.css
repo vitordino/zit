@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+	user-select: none;
+}
+
+.drag-region {
+	-webkit-app-region: drag;
+}
