@@ -1,15 +1,21 @@
 import type { ReactNode } from 'react'
 import type { FileStatusResult } from 'simple-git'
-import { CompositeProvider, Composite, CompositeItem } from '@ariakit/react/composite'
+import {
+	CompositeProvider,
+	Composite,
+	CompositeItem,
+	CompositeGroup,
+	CompositeGroupLabel,
+} from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
 import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
-	<h2 className='border-border ring-inset border-t border-b px-2 py-1 sticky top-0 bg-editor-background'>
+	<CompositeGroupLabel className='flex-1 border-border border-t border-b px-2 py-1 sticky top-0 bg-editor-background'>
 		{children}
-	</h2>
+	</CompositeGroupLabel>
 )
 
 type FileItemProps = FileStatusResult & { onClick?: () => void }
@@ -38,11 +44,15 @@ type FilePanelBaseProps = {
 	status?: GitStatus
 	onUnstagedItemClick?: (item: FileStatusResult) => void
 	onStagedItemClick?: (item: FileStatusResult) => void
+	onStageAll?: () => void
+	onUnstageAll?: () => void
 }
 export const FilePanelBase = ({
 	status,
 	onUnstagedItemClick,
 	onStagedItemClick,
+	onStageAll,
+	onUnstageAll,
 }: FilePanelBaseProps) => {
 	const unstaged = status?.data?.files.filter(x => !status.data?.staged.includes(x.path))
 	const staged = status?.data?.files.filter(x => status.data?.staged.includes(x.path))
@@ -51,16 +61,32 @@ export const FilePanelBase = ({
 		<CompositeProvider focusLoop virtualFocus>
 			<Composite className='group flex-1 outline-none overflow-auto scroll-pt-8' autoFocus>
 				{!!unstaged?.length && (
-					<>
-						<FilePanelTitle>unstaged files</FilePanelTitle>
+					<CompositeGroup>
+						<div className='flex w-full'>
+							<FilePanelTitle>unstaged files</FilePanelTitle>
+							<CompositeItem
+								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected'
+								onClick={onStageAll}
+							>
+								stage all
+							</CompositeItem>
+						</div>
 						<FileList items={unstaged} onItemClick={onUnstagedItemClick} />
-					</>
+					</CompositeGroup>
 				)}
 				{!!staged?.length && (
-					<>
-						<FilePanelTitle>staged files</FilePanelTitle>
+					<CompositeGroup>
+						<div className='flex w-full'>
+							<FilePanelTitle>staged files</FilePanelTitle>
+							<CompositeItem
+								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected'
+								onClick={onUnstageAll}
+							>
+								unstage all
+							</CompositeItem>
+						</div>
 						<FileList items={staged} onItemClick={onStagedItemClick} />
-					</>
+					</CompositeGroup>
 				)}
 			</Composite>
 		</CompositeProvider>
@@ -70,17 +96,22 @@ export const FilePanelBase = ({
 export const FilePanel = () => {
 	const status = useStore(x => x.git?.status)
 	const dispatch = useDispatch()
-	const onStageItemClick = (item: FileStatusResult) =>
+	const onStagedItemClick = (item: FileStatusResult) =>
 		dispatch({ type: 'GIT:UNSTAGE', payload: item.path })
 
-	const onUnstageItemClick = (item: FileStatusResult) =>
+	const onUnstagedItemClick = (item: FileStatusResult) =>
 		dispatch({ type: 'GIT:STAGE', payload: item.path })
+
+	const onStageAll = () => dispatch({ type: 'GIT:STAGE_ALL' })
+	const onUnstageAll = () => dispatch({ type: 'GIT:UNSTAGE_ALL' })
 
 	return (
 		<FilePanelBase
 			status={status}
-			onStagedItemClick={onStageItemClick}
-			onUnstagedItemClick={onUnstageItemClick}
+			onStagedItemClick={onStagedItemClick}
+			onUnstagedItemClick={onUnstagedItemClick}
+			onStageAll={onStageAll}
+			onUnstageAll={onUnstageAll}
 		/>
 	)
 }
