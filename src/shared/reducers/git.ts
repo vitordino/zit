@@ -24,6 +24,7 @@ export type GitAction =
 	| { type: 'GIT:STAGE_ALL' }
 	| { type: 'GIT:UNSTAGE'; payload: string }
 	| { type: 'GIT:UNSTAGE_ALL' }
+	| { type: 'GIT:COMMIT'; payload: string }
 
 const INITIAL_GIT_STATUS: GitStatus = { state: 'initial', data: null, error: null }
 const INITIAL_GIT_BRANCH: GitBranch = { state: 'initial', data: null, error: null }

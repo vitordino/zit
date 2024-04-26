@@ -9,3 +9,7 @@ body {
 .drag-region {
 	-webkit-app-region: drag;
 }
+
+textarea {
+	field-sizing: content;
+}

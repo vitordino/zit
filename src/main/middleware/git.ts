@@ -53,8 +53,7 @@ const branchSwitcher: Middleware = store => next => async action => {
 			payload: { body: 'branch is not clean, commit or stash before changing branches' },
 		})
 	try {
-		const x = await simpleGit({ baseDir }).checkout(action.payload)
-		console.log({ x })
+		await simpleGit({ baseDir }).checkout(action.payload)
 		return branchFetcher(store)(next)(action)
 	} catch (e) {
 		console.log({ e })
@@ -69,8 +68,7 @@ const branchSwitcher: Middleware = store => next => async action => {
 const fileStager: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STAGE') return next(action)
 	try {
-		const x = await simpleGit({ baseDir }).add(action.payload)
-		console.log({ x })
+		await simpleGit({ baseDir }).add(action.payload)
 		return statusFetcher(store)(next)(action)
 	} catch (e) {
 		console.log({ e })
@@ -85,8 +83,7 @@ const fileStager: Middleware = store => next => async action => {
 const allStager: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STAGE_ALL') return next(action)
 	try {
-		const x = await simpleGit({ baseDir }).add('.')
-		console.log({ x })
+		await simpleGit({ baseDir }).add('.')
 		return statusFetcher(store)(next)(action)
 	} catch (e) {
 		console.log({ e })
@@ -101,8 +98,7 @@ const allStager: Middleware = store => next => async action => {
 const fileUnstager: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:UNSTAGE') return next(action)
 	try {
-		const x = await simpleGit({ baseDir }).reset(ResetMode.MIXED, ['--', action.payload])
-		console.log({ x })
+		await simpleGit({ baseDir }).reset(ResetMode.MIXED, ['--', action.payload])
 		return statusFetcher(store)(next)(action)
 	} catch (e) {
 		console.log({ e })
@@ -117,13 +113,27 @@ const fileUnstager: Middleware = store => next => async action => {
 const allUnstager: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:UNSTAGE_ALL') return next(action)
 	try {
-		const x = await simpleGit({ baseDir }).reset(ResetMode.MIXED, ['--'])
-		console.log({ x })
+		await simpleGit({ baseDir }).reset(ResetMode.MIXED, ['--'])
 		return statusFetcher(store)(next)(action)
 	} catch {
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while staging all files` },
+		})
+		return statusFetcher(store)(next)(action)
+	}
+}
+
+const commit: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:COMMIT') return next(action)
+	try {
+		await simpleGit({ baseDir }).commit(action.payload)
+		return statusFetcher(store)(next)(action)
+	} catch (e) {
+		console.log(e)
+		next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: `issue while commiting` },
 		})
 		return statusFetcher(store)(next)(action)
 	}
@@ -138,6 +148,7 @@ const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:STAGE_ALL': allStager,
 	'GIT:UNSTAGE': fileUnstager,
 	'GIT:UNSTAGE_ALL': allUnstager,
+	'GIT:COMMIT': commit,
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {
