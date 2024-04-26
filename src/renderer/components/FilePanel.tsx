@@ -13,7 +13,7 @@ import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
-	<CompositeGroupLabel className='flex-1 border-border border-t border-b px-2 py-1 sticky top-0 bg-editor-background'>
+	<CompositeGroupLabel className='flex-1 border-border border-t border-b px-2 py-1 sticky top-0 bg-editor-background text-text-muted'>
 		{children}
 	</CompositeGroupLabel>
 )
@@ -56,6 +56,7 @@ export const FilePanelBase = ({
 }: FilePanelBaseProps) => {
 	const unstaged = status?.data?.files.filter(x => !status.data?.staged.includes(x.path))
 	const staged = status?.data?.files.filter(x => status.data?.staged.includes(x.path))
+	// [TODO]: empty state
 	if (!staged?.length && !unstaged?.length) return <div className='flex-1' />
 	return (
 		<CompositeProvider focusLoop virtualFocus>
@@ -65,7 +66,7 @@ export const FilePanelBase = ({
 						<div className='flex w-full'>
 							<FilePanelTitle>unstaged files</FilePanelTitle>
 							<CompositeItem
-								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected'
+								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 								onClick={onStageAll}
 							>
 								stage all
@@ -79,7 +80,7 @@ export const FilePanelBase = ({
 						<div className='flex w-full'>
 							<FilePanelTitle>staged files</FilePanelTitle>
 							<CompositeItem
-								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected'
+								className='border-border border-t border-l border-b px-2 py-1 sticky top-0 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 								onClick={onUnstageAll}
 							>
 								unstage all
