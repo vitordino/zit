@@ -40,7 +40,10 @@ export const CommitLog = () => {
 	const log = useStore(x => x.git?.log?.data)
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => {
-		setSearch({ message: log?.latest?.message ?? '' })
+		setSearch(x => {
+			x.set('message', log?.latest?.message ?? '')
+			return x
+		})
 		dispatch({ type: 'GIT:UNDO_COMMIT', payload })
 	}
 	if (search.get('log') !== 'true') return null

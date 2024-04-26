@@ -36,7 +36,11 @@ export const CommitLine = () => {
 	const ahead = useStore(x => x.git?.status.data?.ahead)
 	const dispatch = useDispatch()
 	const log = search.get('log') === 'true' ? true : false
-	const toggleLog = () => setSearch({ log: log ? 'false' : 'true' })
+	const toggleLog = () =>
+		setSearch(x => {
+			x.set('log', log ? 'false' : 'true')
+			return x
+		})
 	const onPull = () => dispatch({ type: 'GIT:PULL' })
 	const onPush = () => dispatch({ type: 'GIT:PUSH' })
 

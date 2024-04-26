@@ -46,7 +46,11 @@ export const CommitInput = () => {
 	const onCommit = (payload: string) => dispatch({ type: 'GIT:COMMIT', payload })
 
 	const message = search.get('message') ?? ''
-	const setMessage = (message: string) => setSearch({ message })
+	const setMessage = (message: string) =>
+		setSearch(x => {
+			x.set('message', message)
+			return x
+		})
 
 	return (
 		<CommitInputBase
