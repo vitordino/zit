@@ -21,7 +21,7 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 						{!i && (
 							<button
 								onClick={() => onUndo(x.hash)}
-								className='hover:bg-error-background text-error self-stretch px-3 mx-2'
+								className='focus-visible:bg-terminal-ansi-bright-red focus-visible:text-terminal-ansi-dim-red hover:bg-terminal-ansi-bright-red hover:text-terminal-ansi-dim-red text-terminal-ansi-red self-stretch px-3 mx-2 outline-none'
 							>
 								undo
 							</button>
