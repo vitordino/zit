@@ -25,10 +25,10 @@ const FileItem = ({ path, working_dir, index, onClick }: FileItemProps) => (
 		className='w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected flex items-stretch last:border-b border-border'
 		onClick={onClick}
 	>
-		<div className='border-r border-border p-1 text-center w-8 whitespace-pre'>
+		<div className='border-r border-border p-1 text-center w-8 whitespace-pre flex-shrink-0'>
 			{(working_dir + index).trim()}
 		</div>
-		<div className='p-1'>{path}</div>
+		<div className='p-1 overflow-hidden text-ellipsis whitespace-nowrap'>{path}</div>
 	</CompositeItem>
 )
 

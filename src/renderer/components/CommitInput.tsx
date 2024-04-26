@@ -22,7 +22,7 @@ export const CommitInputBase = ({
 	return (
 		<form className='w-full flex items-stretch bg-editor-subheader-background' onSubmit={onSubmit}>
 			<textarea
-				className='flex-1 bg-editor-subheader-background resize-none outline-none p-2 placeholder:text-text-muted ring-1 ring-border'
+				className='flex-1 bg-editor-subheader-background resize-none outline-none px-2 py-1 placeholder:text-text-muted ring-1 ring-border whitespace-nowrap w-0'
 				value={message}
 				onChange={e => setMessage(e.target.value)}
 				placeholder='commit message'
