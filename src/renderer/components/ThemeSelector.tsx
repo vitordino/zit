@@ -45,7 +45,7 @@ export const ThemeSelectorBase = ({ theme, setTheme }: ThemeSelectorBaseProps) =
 						<Combobox
 							placeholder='Select theme…'
 							autoSelect='always'
-							className='relative left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 border border-border appearance-none outline-none bg-background text-text rounded-t-md py-1 px-4 w-full max-w-96'
+							className='relative left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 border border-border appearance-none outline-none bg-background text-text rounded-t-md py-1 px-4 w-full max-w-96 placeholder:text-text-muted'
 							onKeyDown={e => e.key === 'Escape' && dialog.hide()}
 						/>
 						<ComboboxPopover
