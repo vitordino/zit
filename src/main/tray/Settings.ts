@@ -5,13 +5,13 @@ import type { Dispatch, State } from 'src/shared/reducers'
 
 export const TraySettings = (
 	state: Partial<State>,
-	dispatch: Dispatch
+	dispatch: Dispatch,
 ): MenuItemConstructorOptions[] => {
 	const themeItems: MenuItemConstructorOptions[] = ALL_THEMES.map(theme => ({
 		label: theme,
 		type: 'radio',
 		checked: theme === state.settings?.theme,
-		click: () => dispatch({ type: 'SETTINGS:SET_THEME', payload: theme })
+		click: () => dispatch({ type: 'SETTINGS:SET_THEME', payload: theme }),
 	}))
 
 	return [
@@ -21,8 +21,8 @@ export const TraySettings = (
 			submenu: [
 				{ type: 'normal', label: `current: ${state.settings?.theme}`, enabled: false },
 				{ type: 'separator' },
-				...themeItems
-			]
-		}
+				...themeItems,
+			],
+		},
 	]
 }

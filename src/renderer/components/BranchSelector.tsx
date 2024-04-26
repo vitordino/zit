@@ -19,7 +19,7 @@ export const BranchSelectorBase = ({ branches, setBranch }: BranchSelectorBasePr
 	const currentBranch = branches.find(x => x.current)
 	const matches = useMemo(
 		() => matchSorter(branches, search, { keys: ['name'] }),
-		[search, branches]
+		[search, branches],
 	)
 
 	return (

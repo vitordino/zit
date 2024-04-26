@@ -6,7 +6,7 @@ export type NotificationsAction = { type: 'NOTIFICATIONS:ADD_NOTIFICATION'; payl
 
 export const notificationsReducer: Reducer<Notifications, NotificationsAction> = (
 	state = { notifications: [] },
-	action
+	action,
 ) => {
 	switch (action.type) {
 		case 'NOTIFICATIONS:ADD_NOTIFICATION':

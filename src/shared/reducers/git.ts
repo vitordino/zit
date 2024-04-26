@@ -34,33 +34,33 @@ export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, actio
 		case 'GIT:STATUS@LOADING':
 			return {
 				...state,
-				status: { ...state.status, state: state.status?.data ? 'revalidating' : 'loading' }
+				status: { ...state.status, state: state.status?.data ? 'revalidating' : 'loading' },
 			}
 		case 'GIT:STATUS@LOADED':
 			return {
 				...state,
-				status: { state: 'idle', error: null, data: action.payload }
+				status: { state: 'idle', error: null, data: action.payload },
 			}
 		case 'GIT:STATUS@ERROR':
 			return {
 				...state,
-				status: { state: 'error', error: action.payload, data: null }
+				status: { state: 'error', error: action.payload, data: null },
 			}
 
 		case 'GIT:BRANCH@LOADING':
 			return {
 				...state,
-				branch: { ...state.branch, state: state.branch?.data ? 'revalidating' : 'loading' }
+				branch: { ...state.branch, state: state.branch?.data ? 'revalidating' : 'loading' },
 			}
 		case 'GIT:BRANCH@LOADED':
 			return {
 				...state,
-				branch: { state: 'idle', error: null, data: action.payload }
+				branch: { state: 'idle', error: null, data: action.payload },
 			}
 		case 'GIT:BRANCH@ERROR':
 			return {
 				...state,
-				branch: { state: 'error', error: action.payload, data: null }
+				branch: { state: 'error', error: action.payload, data: null },
 			}
 		default:
 			return state

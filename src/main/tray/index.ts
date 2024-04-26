@@ -6,7 +6,7 @@ import { TraySettings } from 'src/main/tray/Settings'
 
 const trayIcon = nativeImage.createFromDataURL(image).resize({
 	width: 18,
-	height: 18
+	height: 18,
 })
 
 class SystemTray {
@@ -30,7 +30,7 @@ class SystemTray {
 		const contextMenu = Menu.buildFromTemplate([
 			...TraySettings(this.state, this.dispatch),
 			{ type: 'separator' },
-			{ label: 'quit', click: app.quit }
+			{ label: 'quit', click: app.quit },
 		])
 
 		this.instance.setToolTip('This text comes from tray module.')

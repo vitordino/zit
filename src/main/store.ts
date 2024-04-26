@@ -7,5 +7,5 @@ export const store: Store = configureStore<State, Action>({
 	// @ts-expect-error ignore for now
 	reducer,
 	// @ts-expect-error ignore for now
-	middleware: x => [...x(), ...middleware]
+	middleware: x => [...x(), ...middleware],
 })
