@@ -3,7 +3,7 @@ import { StatusBarButton } from 'src/renderer/components/Button'
 import { BranchSelector } from './BranchSelector'
 
 export const Header = () => (
-	<div className='relative pt-0.5 flex items-center bg-status-bar-background h-[35px]'>
+	<div className='flex-shrink-0 sticky top-0 w-full pt-0.5 flex items-center bg-status-bar-background h-[35px]'>
 		<div className='drag-region h-full w-[76px]'></div>
 		{/* [TODO]: path selector (recent + open dialog) */}
 		<StatusBarButton>path</StatusBarButton>
