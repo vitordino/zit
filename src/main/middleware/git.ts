@@ -141,14 +141,39 @@ const commit: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:COMMIT') return next(action)
 	try {
 		await simpleGit({ baseDir }).commit(action.payload)
-		return statusFetcher(store)(next)(action)
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
 	} catch (e) {
 		console.log(e)
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while commiting` },
 		})
-		return statusFetcher(store)(next)(action)
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	}
+}
+
+const undoCommit: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:UNDO_COMMIT') return next(action)
+
+	const latest = store.getState().git.log.data?.latest?.hash
+	// don’t let user undo if not on the latest
+	if (!latest || latest !== action.payload) return statusFetcher(store)(next)(action)
+
+	try {
+		const result = await simpleGit({ baseDir }).reset(ResetMode.SOFT, ['HEAD~'])
+		console.log({ result })
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
+	} catch (e) {
+		console.log({ e })
+		next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: { body: `issue while undoing commit: ${action.payload}` },
+		})
+		statusFetcher(store)(next)(action)
+		return logFetcher(store)(next)(action)
 	}
 }
 
@@ -156,13 +181,14 @@ const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:REFRESH': refreshFetcher,
 	'GIT:STATUS': statusFetcher,
 	'GIT:BRANCH': branchFetcher,
-	'GIT:BRANCH': logFetcher,
+	'GIT:LOG': logFetcher,
 	'GIT:CHANGE_BRANCH': branchSwitcher,
 	'GIT:STAGE': fileStager,
 	'GIT:STAGE_ALL': allStager,
 	'GIT:UNSTAGE': fileUnstager,
 	'GIT:UNSTAGE_ALL': allUnstager,
 	'GIT:COMMIT': commit,
+	'GIT:UNDO_COMMIT': undoCommit,
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {

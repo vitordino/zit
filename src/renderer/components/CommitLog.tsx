@@ -38,5 +38,5 @@ export const CommitLog = () => {
 	const log = useStore(x => x.git?.log?.data)
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => dispatch({ type: 'GIT:UNDO_COMMIT', payload })
-	return <CommitLogBase log={log} />
+	return <CommitLogBase log={log} onUndo={onUndo} />
 }
