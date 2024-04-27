@@ -94,15 +94,27 @@ export const FilePanelBase = ({
 
 export const FilePanel = () => {
 	const status = useStore(x => x.git?.status)
+	const path = useStore(x => x.git?.path)
 	const dispatch = useDispatch()
-	const onStagedItemClick = (item: FileStatusResult) =>
-		dispatch({ type: 'GIT:UNSTAGE', payload: item.path })
 
-	const onUnstagedItemClick = (item: FileStatusResult) =>
-		dispatch({ type: 'GIT:STAGE', payload: item.path })
+	const onStagedItemClick = (item: FileStatusResult) => {
+		if (!path) return
+		dispatch({ type: 'GIT:UNSTAGE', path, payload: item.path })
+	}
 
-	const onStageAll = () => dispatch({ type: 'GIT:STAGE_ALL' })
-	const onUnstageAll = () => dispatch({ type: 'GIT:UNSTAGE_ALL' })
+	const onUnstagedItemClick = (item: FileStatusResult) => {
+		if (!path) return
+		dispatch({ type: 'GIT:STAGE', path, payload: item.path })
+	}
+
+	const onStageAll = () => {
+		if (!path) return
+		dispatch({ type: 'GIT:STAGE_ALL', path })
+	}
+	const onUnstageAll = () => {
+		if (!path) return
+		dispatch({ type: 'GIT:UNSTAGE_ALL', path })
+	}
 
 	return (
 		<FilePanelBase
