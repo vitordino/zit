@@ -9,5 +9,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	</React.StrictMode>,
 )
 
+// @ts-expect-error write proper declaration later
 const refresh = () => window.reduxtron.dispatch({ type: 'GIT:REFRESH', path: window.gitPath })
 window.addEventListener('focus', refresh)

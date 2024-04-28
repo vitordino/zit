@@ -8,15 +8,15 @@ import { createWindow } from 'src/main/window'
 const openRepo: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:OPEN') return EMPTY_GIT_ACTION
 	if (!action.path || store.getState().git[action.path]?.path) return EMPTY_GIT_ACTION
-	next(action)
 	createWindow({ gitPath: action.path })
-	return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	return next(action)
 }
 
 const fetchStatus: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STATUS') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git[action.path]?.status.state === 'loading') {
+	if (store.getState().git[action.path]?.status?.state === 'loading') {
 		return next({ type: 'GIT:STATUS@LOADING', path: action.path })
 	}
 	try {
@@ -39,7 +39,7 @@ const fetchStatus: Middleware = store => next => async action => {
 const fetchBranch: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:BRANCH') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git[action.path]?.branch.state === 'loading')
+	if (store.getState().git[action.path]?.branch?.state === 'loading')
 		return next({ type: 'GIT:BRANCH@LOADING', path: action.path })
 	try {
 		next({ type: 'GIT:BRANCH@LOADING', path: action.path })
@@ -57,7 +57,7 @@ const fetchBranch: Middleware = store => next => async action => {
 const fetchLog: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:LOG') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git[action.path]?.log.state === 'loading') {
+	if (store.getState().git[action.path]?.log?.state === 'loading') {
 		return next({ type: 'GIT:LOG@LOADING', path: action.path })
 	}
 	try {

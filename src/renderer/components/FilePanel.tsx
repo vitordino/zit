@@ -9,7 +9,7 @@ import {
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
-import { useDispatch, useGitPath, useGitStore, useStore } from 'src/renderer/hooks/useStore'
+import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (

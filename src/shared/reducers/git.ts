@@ -57,8 +57,8 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 				[action.path]: {
 					...state[action.path],
 					status: {
-						...state[action.path].status,
-						state: state[action.path].status?.data ? 'revalidating' : 'loading',
+						...state[action.path]?.status,
+						state: state[action.path]?.status?.data ? 'revalidating' : 'loading',
 					},
 				},
 			}
@@ -85,8 +85,8 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 				[action.path]: {
 					...state[action.path],
 					branch: {
-						...state[action.path].branch,
-						state: state[action.path].branch?.data ? 'revalidating' : 'loading',
+						...state[action.path]?.branch,
+						state: state[action.path]?.branch?.data ? 'revalidating' : 'loading',
 					},
 				},
 			}
@@ -113,8 +113,8 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 				[action.path]: {
 					...state[action.path],
 					log: {
-						...state[action.path].log,
-						state: state[action.path].log?.data ? 'revalidating' : 'loading',
+						...state[action.path]?.log,
+						state: state[action.path]?.log?.data ? 'revalidating' : 'loading',
 					},
 				},
 			}
