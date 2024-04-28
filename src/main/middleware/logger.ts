@@ -1,8 +1,13 @@
+import { inspect } from 'util'
 import type { Middleware } from 'src/shared/reducers'
 
+const p = (i: unknown) => inspect(i, { depth: null, colors: true })
+
 export const loggerMiddleware: Middleware = store => next => async action => {
-	console.log('dispatching', { action, state: store.getState() })
 	const result = next(action)
-	console.log('next state', store.getState())
+	console.log('='.repeat(80))
+	console.log(action)
+	console.log('-'.repeat(80))
+	console.log(p(store.getState()))
 	return result
 }
