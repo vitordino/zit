@@ -3,6 +3,7 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 
 import icon from 'resources/icon.png?asset'
+import { store } from './store'
 
 export const createWindow = ({ gitPath }: { gitPath: string }) => {
 	// Create the browser window.
@@ -32,6 +33,7 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 	})
 
 	mainWindow.on('ready-to-show', () => {
+		store.dispatch({ type: 'GIT:REFRESH', path: gitPath })
 		if (is.dev) return mainWindow.showInactive()
 		return mainWindow.show()
 	})

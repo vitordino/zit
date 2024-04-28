@@ -9,7 +9,6 @@ const openRepo: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:OPEN') return EMPTY_GIT_ACTION
 	if (!action.path || store.getState().git[action.path]?.path) return EMPTY_GIT_ACTION
 	createWindow({ gitPath: action.path })
-	refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	return next(action)
 }
 
