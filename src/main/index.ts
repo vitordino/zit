@@ -39,7 +39,8 @@ const createWindow = () => {
 	})
 
 	mainWindow.on('ready-to-show', () => {
-		mainWindow.show()
+		if (is.dev) return mainWindow.showInactive()
+		return mainWindow.show()
 	})
 
 	mainWindow.webContents.setWindowOpenHandler(details => {
