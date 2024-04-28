@@ -11,3 +11,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 const refresh = () => window.reduxtron.dispatch({ type: 'GIT:REFRESH' })
 window.addEventListener('focus', refresh)
+
+const x = ''

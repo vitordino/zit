@@ -42,8 +42,9 @@ export const CommitInputBase = ({
 export const CommitInput = () => {
 	const [search, setSearch] = useSearchParams()
 	const commitDisabled = useStore(x => !x.git?.status.data?.staged.length)
+	const path = useStore(x => x.git?.path)
 	const dispatch = useDispatch()
-	const onCommit = (payload: string) => dispatch({ type: 'GIT:COMMIT', payload })
+	const onCommit = (payload: string) => path && dispatch({ type: 'GIT:COMMIT', path, payload })
 
 	const message = search.get('message') ?? ''
 	const setMessage = (message: string) =>

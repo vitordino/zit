@@ -1,11 +1,11 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { app, BrowserWindow, ipcMain } from 'electron/main'
+import { dialog } from 'electron/main'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { mainReduxBridge } from 'reduxtron/main'
 
-import icon from 'resources/icon.png?asset'
 import { store } from 'src/main/store'
 import { tray } from 'src/main/tray'
+import { createWindow } from 'src/main/window'
 
 const { unsubscribe } = mainReduxBridge(ipcMain, store)
 
@@ -13,48 +13,17 @@ tray.setState(store.getState())
 tray.setDispatch(store.dispatch)
 store.subscribe(() => tray.setState(store.getState()))
 
-const createWindow = () => {
-	// Create the browser window.
-	const mainWindow = new BrowserWindow({
-		width: 900,
-		height: 670,
-		show: false,
-		autoHideMenuBar: true,
-		titleBarStyle: 'hiddenInset',
-		trafficLightPosition: { x: 9, y: 9 },
-		titleBarOverlay: false,
-		frame: false,
-		...(process.platform === 'linux' ? { icon } : {}),
-		webPreferences: {
-			preload: join(__dirname, '../preload/index.js'),
-			sandbox: true,
-			contextIsolation: true,
-			nodeIntegration: false,
-		},
+// check to see if there’s a selected path to open a window for,
+// otherwise open file dialog and update store to include a path
+const createWindowOrPickFolder = async () => {
+	if (store.getState().git.path) return createWindow()
+	const { canceled, filePaths } = await dialog.showOpenDialog({
+		properties: ['openDirectory'],
+		title: 'open local repository',
 	})
-
-	ipcMain.on('subscribe', async (state: unknown) => {
-		if (mainWindow?.isDestroyed()) return
-		mainWindow?.webContents?.send('subscribe', state)
-	})
-
-	mainWindow.on('ready-to-show', () => {
-		if (is.dev) return mainWindow.showInactive()
-		return mainWindow.show()
-	})
-
-	mainWindow.webContents.setWindowOpenHandler(details => {
-		shell.openExternal(details.url)
-		return { action: 'deny' }
-	})
-
-	// HMR for renderer base on electron-vite cli.
-	// Load the remote URL for development or the local html file for production.
-	if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-		mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-	} else {
-		mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-	}
+	console.log({ canceled, filePaths })
+	if (canceled || !filePaths?.length) return app.quit()
+	store.dispatch({ type: 'GIT:OPEN', path: filePaths[0] })
 }
 
 // This method will be called when Electron has finished
@@ -71,13 +40,13 @@ app.whenReady().then(() => {
 		optimizer.watchWindowShortcuts(window)
 	})
 
-	createWindow()
+	createWindowOrPickFolder()
 	tray.create()
 
 	app.on('activate', () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		if (BrowserWindow.getAllWindows().length === 0) createWindow()
+		if (BrowserWindow.getAllWindows().length === 0) createWindowOrPickFolder()
 	})
 })
 

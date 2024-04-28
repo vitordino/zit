@@ -4,8 +4,9 @@ import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
 const DebugPanel = ({ children }: { children: ReactNode }) => {
 	const dispatch = useDispatch()
 	const state = useStore(x => x)
-	const getStatus = () => dispatch({ type: 'GIT:STATUS' })
-	const getBranches = () => dispatch({ type: 'GIT:BRANCH' })
+	const path = state.git?.path
+	const getStatus = () => path && dispatch({ type: 'GIT:STATUS', path })
+	const getBranches = () => path && dispatch({ type: 'GIT:BRANCH', path })
 	return (
 		<>
 			<div className='w-1/2 flex h-full flex-col overflow-auto'>{children}</div>

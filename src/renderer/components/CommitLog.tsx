@@ -38,13 +38,15 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 export const CommitLog = () => {
 	const [search, setSearch] = useSearchParams()
 	const log = useStore(x => x.git?.log?.data)
+	const path = useStore(x => x.git?.path)
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => {
+		if (!path) return
 		setSearch(x => {
 			x.set('message', log?.latest?.message ?? '')
 			return x
 		})
-		dispatch({ type: 'GIT:UNDO_COMMIT', payload })
+		dispatch({ type: 'GIT:UNDO_COMMIT', path, payload })
 	}
 	if (search.get('log') !== 'true') return null
 	return <CommitLogBase log={log} onUndo={onUndo} />

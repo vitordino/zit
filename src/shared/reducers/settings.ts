@@ -6,7 +6,7 @@ export type SettingsAction =
 	| { type: 'SETTINGS:SET_THEME'; payload: Theme }
 	| { type: 'SETTINGS:SET_DEBUG'; payload: boolean }
 
-export const DEFAULT_THEME = 'One Dark' as const satisfies Theme
+export const DEFAULT_THEME = 'Ayu Dark' as const satisfies Theme
 
 export const settingsReducer: Reducer<Settings, SettingsAction> = (
 	state = { theme: DEFAULT_THEME, debug: false },

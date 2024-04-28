@@ -68,8 +68,12 @@ export const BranchSelectorBase = ({ branches, setBranch }: BranchSelectorBasePr
 
 export const BranchSelector = () => {
 	const data = useStore(x => x.git?.branch?.data?.branches)
+	const path = useStore(x => x.git?.path)
 	const dispatch = useDispatch()
-	const setBranch = (payload: string) => dispatch({ type: 'GIT:CHANGE_BRANCH', payload })
+	const setBranch = (payload: string) => {
+		if (!path) return
+		dispatch({ type: 'GIT:CHANGE_BRANCH', path, payload })
+	}
 	const branches = Object.values(data || {})
 	if (!branches?.length) return null
 	return <BranchSelectorBase branches={branches} setBranch={setBranch} />

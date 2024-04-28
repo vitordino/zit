@@ -34,6 +34,7 @@ export const CommitLine = () => {
 	const [search, setSearch] = useSearchParams()
 	const behind = useStore(x => x.git?.status.data?.behind)
 	const ahead = useStore(x => x.git?.status.data?.ahead)
+	const path = useStore(x => x.git?.path)
 	const dispatch = useDispatch()
 	const log = search.get('log') === 'true' ? true : false
 	const toggleLog = () =>
@@ -41,8 +42,8 @@ export const CommitLine = () => {
 			x.set('log', log ? 'false' : 'true')
 			return x
 		})
-	const onPull = () => dispatch({ type: 'GIT:PULL' })
-	const onPush = () => dispatch({ type: 'GIT:PUSH' })
+	const onPull = () => path && dispatch({ type: 'GIT:PULL', path })
+	const onPush = () => path && dispatch({ type: 'GIT:PUSH', path })
 
 	return (
 		<CommitLineBase

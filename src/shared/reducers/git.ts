@@ -6,9 +6,10 @@ export type GitStatusData = Omit<StatusResult, 'isClean'> & { isClean: boolean }
 export type GitStatus = { state: FetchState; data: GitStatusData | null; error: string | null }
 export type GitBranch = { state: FetchState; data: BranchSummary | null; error: string | null }
 export type GitLog = { state: FetchState; data: LogResult | null; error: string | null }
-export type Git = { status: GitStatus; branch: GitBranch; log: GitLog }
+export type Git = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
 
-export type GitAction =
+export type GitAction = { path: string } & (
+	| { type: 'GIT:OPEN' }
 	| { type: 'GIT:STATUS' }
 	| { type: 'GIT:STATUS@LOADING' }
 	| { type: 'GIT:STATUS@LOADED'; payload: Git['status']['data'] }
@@ -33,12 +34,15 @@ export type GitAction =
 	| { type: 'GIT:UNDO_COMMIT'; payload: string }
 	| { type: 'GIT:PUSH' }
 	| { type: 'GIT:PULL' }
+)
 
 const INITIAL = { state: 'initial', data: null, error: null } as const
 const INITIAL_STATE: Git = { status: INITIAL, branch: INITIAL, log: INITIAL }
 
 export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, action) => {
 	switch (action.type) {
+		case 'GIT:OPEN':
+			return { ...state, path: action.path }
 		case 'GIT:STATUS@LOADING':
 			return {
 				...state,
