@@ -5,6 +5,7 @@ const p = (i: unknown) => inspect(i, { depth: null, colors: true })
 
 export const loggerMiddleware: Middleware = store => next => async action => {
 	const result = next(action)
+	if (!action.type) return result
 	console.log('='.repeat(80))
 	console.log(action)
 	console.log('-'.repeat(80))

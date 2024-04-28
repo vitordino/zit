@@ -8,7 +8,7 @@ export type GitBranch = { state: FetchState; data: BranchSummary | null; error: 
 export type GitLog = { state: FetchState; data: LogResult | null; error: string | null }
 export type Git = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
 
-export const EMPTY_GIT_ACTION = { type: 'GIT' } as const
+export const EMPTY_GIT_ACTION = { type: '' } as const
 export type EmptyGitAction = typeof EMPTY_GIT_ACTION
 
 export type GitAction =
