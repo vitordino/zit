@@ -10,7 +10,7 @@ const openRepo: Middleware = store => next => async action => {
 	if (!action.path || store.getState().git.path) return EMPTY_GIT_ACTION
 	next(action)
 	createWindow({ gitPath: action.path })
-	return fetchRefresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 }
 
 const fetchStatus: Middleware = store => next => async action => {
@@ -69,7 +69,7 @@ const fetchLog: Middleware = store => next => async action => {
 	}
 }
 
-const fetchRefresh: Middleware = store => next => async action => {
+const refresh: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:REFRESH') return EMPTY_GIT_ACTION
 	fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
 	fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
@@ -85,15 +85,14 @@ const switchBranch: Middleware = store => next => async action => {
 			payload: { body: 'branch is not clean, commit or stash before changing branches' },
 		})
 	try {
-		await simpleGit({ baseDir: action.path }).checkout(action.payload)
-		return fetchBranch(store)(next)(action)
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: 'issue while changing branches' },
 		})
-		return fetchBranch(store)(next)(action)
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -101,14 +100,14 @@ const stageFile: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STAGE') return EMPTY_GIT_ACTION
 	try {
 		await simpleGit({ baseDir: action.path }).add(action.payload)
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while staging file: ${action.payload}` },
 		})
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -116,14 +115,14 @@ const stageAll: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STAGE_ALL') return EMPTY_GIT_ACTION
 	try {
 		await simpleGit({ baseDir: action.path }).add('.')
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while staging all files` },
 		})
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -131,14 +130,14 @@ const unstageFile: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:UNSTAGE') return EMPTY_GIT_ACTION
 	try {
 		await simpleGit({ baseDir: action.path }).reset(ResetMode.MIXED, ['--', action.payload])
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while staging file: ${action.payload}` },
 		})
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -146,13 +145,13 @@ const unstageAll: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:UNSTAGE_ALL') return EMPTY_GIT_ACTION
 	try {
 		await simpleGit({ baseDir: action.path }).reset(ResetMode.MIXED, ['--'])
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch {
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while staging all files` },
 		})
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -160,16 +159,14 @@ const commit: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:COMMIT') return EMPTY_GIT_ACTION
 	try {
 		await simpleGit({ baseDir: action.path }).commit(action.payload)
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log(e)
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while commiting` },
 		})
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -178,40 +175,36 @@ const undoCommit: Middleware = store => next => async action => {
 
 	const latest = store.getState().git.log.data?.latest?.hash
 	// don’t let user undo if not on the latest
-	if (!latest || latest !== action.payload)
-		return fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
+	if (!latest || latest !== action.payload) {
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	}
 
 	try {
-		const result = await simpleGit({ baseDir: action.path }).reset(ResetMode.SOFT, ['HEAD~'])
-		console.log({ result })
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		await simpleGit({ baseDir: action.path }).reset(ResetMode.SOFT, ['HEAD~'])
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while undoing commit: ${action.payload}` },
 		})
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
 const push: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:PUSH') return EMPTY_GIT_ACTION
 	try {
-		const result = await simpleGit({ baseDir: action.path }).push()
-		console.log({ result })
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		await simpleGit({ baseDir: action.path }).push()
+
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while pushing` },
 		})
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
@@ -220,25 +213,23 @@ const pull: Middleware = store => next => async action => {
 	try {
 		const result = await simpleGit({ baseDir: action.path }).pull()
 		console.log({ result })
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: `issue while pushing` },
 		})
-		fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-		return fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
 }
 
 const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:OPEN': openRepo,
-	'GIT:REFRESH': fetchRefresh,
 	'GIT:STATUS': fetchStatus,
 	'GIT:BRANCH': fetchBranch,
 	'GIT:LOG': fetchLog,
+	'GIT:REFRESH': refresh,
 	'GIT:CHANGE_BRANCH': switchBranch,
 	'GIT:STAGE': stageFile,
 	'GIT:STAGE_ALL': stageAll,
