@@ -17,7 +17,7 @@ export const reducer = combineReducers({
 	notifications: notificationsReducer,
 })
 
-export type Action = ActionFromReducer<typeof reducer>
+export type Action = ActionFromReducer<typeof reducer> | { type: 'GLOBAL:LOAD' }
 export type State = ReturnType<typeof reducer>
 export type Dispatch = BaseDispatch<Action>
 export type Subscribe = (listener: () => void) => () => void

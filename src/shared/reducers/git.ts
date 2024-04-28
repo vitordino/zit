@@ -16,6 +16,7 @@ export type GitAction =
 	| EmptyGitAction
 	| ({ path: string } & (
 			| { type: 'GIT:OPEN' }
+			| { type: 'GIT:LOAD'; payload: Git }
 			| { type: 'GIT:STATUS' }
 			| { type: 'GIT:STATUS@LOADING' }
 			| { type: 'GIT:STATUS@LOADED'; payload: GitRepo['status']['data'] }

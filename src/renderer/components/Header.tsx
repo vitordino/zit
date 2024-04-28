@@ -5,7 +5,7 @@ import { BranchSelector } from 'src/renderer/components/BranchSelector'
 
 export const Header = () => {
 	const path = useGitPath()
-	const folder = path.split('/').reverse()[0]
+	const folder = path?.split('/').reverse()[0] || path
 	return (
 		<div className='flex-shrink-0 sticky top-0 w-full pt-0.5 flex items-center bg-status-bar-background h-[35px]'>
 			<div className='drag-region h-full w-[76px]'></div>

@@ -8,6 +8,7 @@ import { tray } from 'src/main/tray'
 
 const { unsubscribe } = mainReduxBridge(ipcMain, store)
 
+store.dispatch({ type: 'GLOBAL:LOAD' })
 tray.setState(store.getState())
 tray.setDispatch(store.dispatch)
 store.subscribe(() => tray.setState(store.getState()))
