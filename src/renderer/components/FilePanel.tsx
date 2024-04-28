@@ -9,7 +9,7 @@ import {
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
-import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { useDispatch, useGitPath, useGitStore, useStore } from 'src/renderer/hooks/useStore'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
@@ -93,8 +93,8 @@ export const FilePanelBase = ({
 }
 
 export const FilePanel = () => {
-	const status = useStore(x => x.git?.status)
-	const path = useStore(x => x.git?.path)
+	const status = useGitStore(x => x?.status)
+	const path = useGitPath()
 	const dispatch = useDispatch()
 
 	const onStagedItemClick = (item: FileStatusResult) => {

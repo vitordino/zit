@@ -14,9 +14,11 @@ store.subscribe(() => tray.setState(store.getState()))
 
 // check to see if there’s a selected path to open a window for,
 // otherwise open file dialog and update store to include a path
-const createWindowOrPickFolder = async () => {
-	const existingPath = store.getState().git.path
-	if (existingPath) return store.dispatch({ type: 'GIT:OPEN', path: existingPath })
+const createWindowsOrPickFolder = async () => {
+	const existingPaths = Object.keys(store.getState().git)
+	if (existingPaths.length) {
+		return existingPaths.forEach(path => store.dispatch({ type: 'GIT:OPEN', path }))
+	}
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ['openDirectory'],
 		title: 'open local repository',
@@ -40,13 +42,13 @@ app.whenReady().then(() => {
 		optimizer.watchWindowShortcuts(window)
 	})
 
-	createWindowOrPickFolder()
+	createWindowsOrPickFolder()
 	tray.create()
 
 	app.on('activate', () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		if (BrowserWindow.getAllWindows().length === 0) createWindowOrPickFolder()
+		if (BrowserWindow.getAllWindows().length === 0) createWindowsOrPickFolder()
 	})
 })
 

@@ -6,7 +6,8 @@ export type GitStatusData = Omit<StatusResult, 'isClean'> & { isClean: boolean }
 export type GitStatus = { state: FetchState; data: GitStatusData | null; error: string | null }
 export type GitBranch = { state: FetchState; data: BranchSummary | null; error: string | null }
 export type GitLog = { state: FetchState; data: LogResult | null; error: string | null }
-export type Git = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
+export type GitRepo = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
+export type Git = Record<string, GitRepo>
 
 export const EMPTY_GIT_ACTION = { type: '' } as const
 export type EmptyGitAction = typeof EMPTY_GIT_ACTION
@@ -17,16 +18,16 @@ export type GitAction =
 			| { type: 'GIT:OPEN' }
 			| { type: 'GIT:STATUS' }
 			| { type: 'GIT:STATUS@LOADING' }
-			| { type: 'GIT:STATUS@LOADED'; payload: Git['status']['data'] }
-			| { type: 'GIT:STATUS@ERROR'; payload: Git['status']['error'] }
+			| { type: 'GIT:STATUS@LOADED'; payload: GitRepo['status']['data'] }
+			| { type: 'GIT:STATUS@ERROR'; payload: GitRepo['status']['error'] }
 			| { type: 'GIT:BRANCH' }
 			| { type: 'GIT:BRANCH@LOADING' }
-			| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
-			| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
+			| { type: 'GIT:BRANCH@LOADED'; payload: GitRepo['branch']['data'] }
+			| { type: 'GIT:BRANCH@ERROR'; payload: GitRepo['branch']['error'] }
 			| { type: 'GIT:LOG' }
 			| { type: 'GIT:LOG@LOADING' }
-			| { type: 'GIT:LOG@LOADED'; payload: Git['log']['data'] }
-			| { type: 'GIT:LOG@ERROR'; payload: Git['log']['error'] }
+			| { type: 'GIT:LOG@LOADED'; payload: GitRepo['log']['data'] }
+			| { type: 'GIT:LOG@ERROR'; payload: GitRepo['log']['error'] }
 			// the combination of all fetchers above
 			| { type: 'GIT:REFRESH' }
 			// commands
@@ -42,58 +43,95 @@ export type GitAction =
 	  ))
 
 const INITIAL = { state: 'initial', data: null, error: null } as const
-const INITIAL_STATE: Git = { status: INITIAL, branch: INITIAL, log: INITIAL }
+export const INITIAL_REPO_STATE: GitRepo = { status: INITIAL, branch: INITIAL, log: INITIAL }
 
-export const gitReducer: Reducer<Git, GitAction> = (state = INITIAL_STATE, action) => {
+export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 	switch (action.type) {
 		case 'GIT:OPEN':
-			return { ...state, path: action.path }
+			if (!action.path) return state
+			return { ...state, [action.path]: { ...INITIAL_REPO_STATE, path: action.path } }
 		case 'GIT:STATUS@LOADING':
 			return {
 				...state,
-				status: { ...state.status, state: state.status?.data ? 'revalidating' : 'loading' },
+				[action.path]: {
+					...state[action.path],
+					status: {
+						...state[action.path].status,
+						state: state[action.path].status?.data ? 'revalidating' : 'loading',
+					},
+				},
 			}
 		case 'GIT:STATUS@LOADED':
 			return {
 				...state,
-				status: { state: 'idle', error: null, data: action.payload },
+				[action.path]: {
+					...state[action.path],
+					status: { state: 'idle', error: null, data: action.payload },
+				},
 			}
 		case 'GIT:STATUS@ERROR':
 			return {
 				...state,
-				status: { state: 'error', error: action.payload, data: null },
+				[action.path]: {
+					...state[action.path],
+					status: { state: 'error', error: action.payload, data: null },
+				},
 			}
 
 		case 'GIT:BRANCH@LOADING':
 			return {
 				...state,
-				branch: { ...state.branch, state: state.branch?.data ? 'revalidating' : 'loading' },
+				[action.path]: {
+					...state[action.path],
+					branch: {
+						...state[action.path].branch,
+						state: state[action.path].branch?.data ? 'revalidating' : 'loading',
+					},
+				},
 			}
 		case 'GIT:BRANCH@LOADED':
 			return {
 				...state,
-				branch: { state: 'idle', error: null, data: action.payload },
+				[action.path]: {
+					...state[action.path],
+					branch: { state: 'idle', error: null, data: action.payload },
+				},
 			}
 		case 'GIT:BRANCH@ERROR':
 			return {
 				...state,
-				branch: { state: 'error', error: action.payload, data: null },
+				[action.path]: {
+					...state[action.path],
+					branch: { state: 'error', error: action.payload, data: null },
+				},
 			}
 
 		case 'GIT:LOG@LOADING':
 			return {
 				...state,
-				log: { ...state.log, state: state.log?.data ? 'revalidating' : 'loading' },
+				[action.path]: {
+					...state[action.path],
+					log: {
+						...state[action.path].log,
+						state: state[action.path].log?.data ? 'revalidating' : 'loading',
+					},
+				},
 			}
 		case 'GIT:LOG@LOADED':
 			return {
 				...state,
-				log: { state: 'idle', error: null, data: action.payload },
+				[action.path]: {
+					...state[action.path],
+					log: { state: 'idle', error: null, data: action.payload },
+				},
 			}
 		case 'GIT:LOG@ERROR':
 			return {
 				...state,
-				log: { state: 'error', error: action.payload, data: null },
+				[action.path]: {
+					...state[action.path],
+					log: { state: 'error', error: action.payload, data: null },
+				},
 			}
 
 		default:

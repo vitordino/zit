@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { CommitLineButton } from 'src/renderer/components/Button'
 import { CommitInput } from 'src/renderer/components/CommitInput'
-import { useDispatch, useStore } from '../hooks/useStore'
+import { useDispatch, useGitStore, useStore } from '../hooks/useStore'
 
 type CommitLineBaseProps = {
 	log?: boolean
@@ -32,9 +32,9 @@ export const CommitLineBase = ({
 
 export const CommitLine = () => {
 	const [search, setSearch] = useSearchParams()
-	const behind = useStore(x => x.git?.status.data?.behind)
-	const ahead = useStore(x => x.git?.status.data?.ahead)
-	const path = useStore(x => x.git?.path)
+	const behind = useGitStore(x => x?.status.data?.behind)
+	const ahead = useGitStore(x => x?.status.data?.ahead)
+	const path = useGitStore(x => x?.path)
 	const dispatch = useDispatch()
 	const log = search.get('log') === 'true' ? true : false
 	const toggleLog = () =>

@@ -3,7 +3,7 @@ import { CompositeProvider, Composite, CompositeItem } from '@ariakit/react/comp
 
 import { GitLog } from 'src/shared/reducers/git'
 import { getRelativeTimeString } from 'src/shared/lib/time'
-import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
 
 type CommitLogBaseProps = { log?: GitLog['data']; onUndo: (hex: string) => void }
 export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
@@ -37,8 +37,8 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 
 export const CommitLog = () => {
 	const [search, setSearch] = useSearchParams()
-	const log = useStore(x => x.git?.log?.data)
-	const path = useStore(x => x.git?.path)
+	const log = useGitStore(x => x?.log?.data)
+	const path = useGitPath()
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => {
 		if (!path) return

@@ -7,7 +7,7 @@ import { createWindow } from 'src/main/window'
 
 const openRepo: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:OPEN') return EMPTY_GIT_ACTION
-	if (!action.path || store.getState().git.path) return EMPTY_GIT_ACTION
+	if (!action.path || store.getState().git[action.path]?.path) return EMPTY_GIT_ACTION
 	next(action)
 	createWindow({ gitPath: action.path })
 	return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -16,7 +16,7 @@ const openRepo: Middleware = store => next => async action => {
 const fetchStatus: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STATUS') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git.status.state === 'loading') {
+	if (store.getState().git[action.path]?.status.state === 'loading') {
 		return next({ type: 'GIT:STATUS@LOADING', path: action.path })
 	}
 	try {
@@ -39,7 +39,7 @@ const fetchStatus: Middleware = store => next => async action => {
 const fetchBranch: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:BRANCH') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git.branch.state === 'loading')
+	if (store.getState().git[action.path]?.branch.state === 'loading')
 		return next({ type: 'GIT:BRANCH@LOADING', path: action.path })
 	try {
 		next({ type: 'GIT:BRANCH@LOADING', path: action.path })
@@ -57,7 +57,7 @@ const fetchBranch: Middleware = store => next => async action => {
 const fetchLog: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:LOG') return EMPTY_GIT_ACTION
 	// if loading, don’t fire a second fetch request — next(action)
-	if (store.getState().git.log.state === 'loading') {
+	if (store.getState().git[action.path]?.log.state === 'loading') {
 		return next({ type: 'GIT:LOG@LOADING', path: action.path })
 	}
 	try {
@@ -78,7 +78,7 @@ const refresh: Middleware = store => next => async action => {
 
 const switchBranch: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:CHANGE_BRANCH') return EMPTY_GIT_ACTION
-	const isClean = store.getState().git?.status?.data?.isClean
+	const isClean = store.getState().git?.[action.path]?.status?.data?.isClean
 	if (!isClean)
 		return next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
@@ -173,7 +173,7 @@ const commit: Middleware = store => next => async action => {
 const undoCommit: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:UNDO_COMMIT') return EMPTY_GIT_ACTION
 
-	const latest = store.getState().git.log.data?.latest?.hash
+	const latest = store.getState().git[action.path]?.log.data?.latest?.hash
 	// don’t let user undo if not on the latest
 	if (!latest || latest !== action.payload) {
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })

@@ -4,7 +4,7 @@ import { Dialog, useDialogStore } from '@ariakit/react/dialog'
 import { Combobox, ComboboxItem, ComboboxProvider, ComboboxPopover } from '@ariakit/react/combobox'
 import { matchSorter } from 'match-sorter'
 
-import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
 import { StatusBarButton } from 'src/renderer/components/Button'
 
 type BranchSelectorBaseProps = {
@@ -67,8 +67,8 @@ export const BranchSelectorBase = ({ branches, setBranch }: BranchSelectorBasePr
 }
 
 export const BranchSelector = () => {
-	const data = useStore(x => x.git?.branch?.data?.branches)
-	const path = useStore(x => x.git?.path)
+	const data = useGitStore(x => x?.branch?.data?.branches)
+	const path = useGitStore(x => x?.path)
 	const dispatch = useDispatch()
 	const setBranch = (payload: string) => {
 		if (!path) return

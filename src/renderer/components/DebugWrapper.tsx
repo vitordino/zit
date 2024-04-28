@@ -1,10 +1,10 @@
 import { ReactNode, useEffect } from 'react'
-import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
+import { useDispatch, useGitPath, useStore } from 'src/renderer/hooks/useStore'
 
 const DebugPanel = ({ children }: { children: ReactNode }) => {
 	const dispatch = useDispatch()
 	const state = useStore(x => x)
-	const path = state.git?.path
+	const path = useGitPath()
 	const getStatus = () => path && dispatch({ type: 'GIT:STATUS', path })
 	const getBranches = () => path && dispatch({ type: 'GIT:BRANCH', path })
 	return (
