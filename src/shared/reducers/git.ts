@@ -8,33 +8,38 @@ export type GitBranch = { state: FetchState; data: BranchSummary | null; error: 
 export type GitLog = { state: FetchState; data: LogResult | null; error: string | null }
 export type Git = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
 
-export type GitAction = { path: string } & (
-	| { type: 'GIT:OPEN' }
-	| { type: 'GIT:STATUS' }
-	| { type: 'GIT:STATUS@LOADING' }
-	| { type: 'GIT:STATUS@LOADED'; payload: Git['status']['data'] }
-	| { type: 'GIT:STATUS@ERROR'; payload: Git['status']['error'] }
-	| { type: 'GIT:BRANCH' }
-	| { type: 'GIT:BRANCH@LOADING' }
-	| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
-	| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
-	| { type: 'GIT:LOG' }
-	| { type: 'GIT:LOG@LOADING' }
-	| { type: 'GIT:LOG@LOADED'; payload: Git['log']['data'] }
-	| { type: 'GIT:LOG@ERROR'; payload: Git['log']['error'] }
-	// the combination of all fetchers above
-	| { type: 'GIT:REFRESH' }
-	// commands
-	| { type: 'GIT:CHANGE_BRANCH'; payload: string }
-	| { type: 'GIT:STAGE'; payload: string }
-	| { type: 'GIT:STAGE_ALL' }
-	| { type: 'GIT:UNSTAGE'; payload: string }
-	| { type: 'GIT:UNSTAGE_ALL' }
-	| { type: 'GIT:COMMIT'; payload: string }
-	| { type: 'GIT:UNDO_COMMIT'; payload: string }
-	| { type: 'GIT:PUSH' }
-	| { type: 'GIT:PULL' }
-)
+export const EMPTY_GIT_ACTION = { type: 'GIT' } as const
+export type EmptyGitAction = typeof EMPTY_GIT_ACTION
+
+export type GitAction =
+	| EmptyGitAction
+	| ({ path: string } & (
+			| { type: 'GIT:OPEN' }
+			| { type: 'GIT:STATUS' }
+			| { type: 'GIT:STATUS@LOADING' }
+			| { type: 'GIT:STATUS@LOADED'; payload: Git['status']['data'] }
+			| { type: 'GIT:STATUS@ERROR'; payload: Git['status']['error'] }
+			| { type: 'GIT:BRANCH' }
+			| { type: 'GIT:BRANCH@LOADING' }
+			| { type: 'GIT:BRANCH@LOADED'; payload: Git['branch']['data'] }
+			| { type: 'GIT:BRANCH@ERROR'; payload: Git['branch']['error'] }
+			| { type: 'GIT:LOG' }
+			| { type: 'GIT:LOG@LOADING' }
+			| { type: 'GIT:LOG@LOADED'; payload: Git['log']['data'] }
+			| { type: 'GIT:LOG@ERROR'; payload: Git['log']['error'] }
+			// the combination of all fetchers above
+			| { type: 'GIT:REFRESH' }
+			// commands
+			| { type: 'GIT:CHANGE_BRANCH'; payload: string }
+			| { type: 'GIT:STAGE'; payload: string }
+			| { type: 'GIT:STAGE_ALL' }
+			| { type: 'GIT:UNSTAGE'; payload: string }
+			| { type: 'GIT:UNSTAGE_ALL' }
+			| { type: 'GIT:COMMIT'; payload: string }
+			| { type: 'GIT:UNDO_COMMIT'; payload: string }
+			| { type: 'GIT:PUSH' }
+			| { type: 'GIT:PULL' }
+	  ))
 
 const INITIAL = { state: 'initial', data: null, error: null } as const
 const INITIAL_STATE: Git = { status: INITIAL, branch: INITIAL, log: INITIAL }

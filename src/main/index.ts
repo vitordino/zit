@@ -5,7 +5,6 @@ import { mainReduxBridge } from 'reduxtron/main'
 
 import { store } from 'src/main/store'
 import { tray } from 'src/main/tray'
-import { createWindow } from 'src/main/window'
 
 const { unsubscribe } = mainReduxBridge(ipcMain, store)
 
@@ -16,7 +15,8 @@ store.subscribe(() => tray.setState(store.getState()))
 // check to see if there’s a selected path to open a window for,
 // otherwise open file dialog and update store to include a path
 const createWindowOrPickFolder = async () => {
-	if (store.getState().git.path) return createWindow()
+	const existingPath = store.getState().git.path
+	if (existingPath) return store.dispatch({ type: 'GIT:OPEN', path: existingPath })
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ['openDirectory'],
 		title: 'open local repository',

@@ -4,7 +4,7 @@ import { is } from '@electron-toolkit/utils'
 
 import icon from 'resources/icon.png?asset'
 
-export const createWindow = () => {
+export const createWindow = ({ gitPath }: { gitPath: string }) => {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
 		width: 900,
@@ -23,6 +23,8 @@ export const createWindow = () => {
 			nodeIntegration: false,
 		},
 	})
+
+	mainWindow.webContents.executeJavaScript(`globalThis.gitPath = '${gitPath}'`)
 
 	ipcMain.on('subscribe', async (state: unknown) => {
 		if (mainWindow?.isDestroyed()) return
