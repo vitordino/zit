@@ -38,6 +38,8 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 		return mainWindow.show()
 	})
 
+	mainWindow.on('close', () => store.dispatch({ type: 'GIT:CLOSE', path: gitPath }))
+
 	mainWindow.webContents.setWindowOpenHandler(details => {
 		shell.openExternal(details.url)
 		return { action: 'deny' }

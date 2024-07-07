@@ -17,6 +17,7 @@ export type GitAction =
 	| ({ path: string } & (
 			| { type: 'GIT:OPEN' }
 			| { type: 'GIT:LOAD'; payload: Git }
+			| { type: 'GIT:CLOSE' }
 			| { type: 'GIT:STATUS' }
 			| { type: 'GIT:STATUS@LOADING' }
 			| { type: 'GIT:STATUS@LOADED'; payload: GitRepo['status']['data'] }
@@ -51,6 +52,10 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 		case 'GIT:OPEN':
 			if (!action.path) return state
 			return { ...state, [action.path]: { ...INITIAL_REPO_STATE, path: action.path } }
+		case 'GIT:CLOSE':
+			if (!action.path) return state
+			console.log('---------CLOSING--------', action.path)
+			return Object.fromEntries(Object.entries(state).filter(([path]) => path !== action.path))
 		case 'GIT:STATUS@LOADING':
 			return {
 				...state,

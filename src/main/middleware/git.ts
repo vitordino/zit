@@ -1,3 +1,4 @@
+import { app } from 'electron'
 import simpleGit, { ResetMode } from 'simple-git'
 
 import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/shared/lib/strip'
@@ -7,8 +8,11 @@ import { createWindow } from 'src/main/window'
 
 const openRepo: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:OPEN') return EMPTY_GIT_ACTION
+	// user asked to open an already open project
+	// [TODO]: focus the window for that project
 	if (!action.path || store.getState().git[action.path]?.path) return EMPTY_GIT_ACTION
 	createWindow({ gitPath: action.path })
+	app.addRecentDocument(action.path)
 	return next(action)
 }
 
