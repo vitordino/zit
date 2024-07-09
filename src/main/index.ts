@@ -57,7 +57,7 @@ app.on('open-file', (event, path) => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		app.quit()
+		store.dispatch({ type: 'APP:QUIT' })
 	}
 })
 

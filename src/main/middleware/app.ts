@@ -25,10 +25,9 @@ const pickFolderPickedMiddleware: Middleware = store => next => async action => 
 }
 
 const cancelledPickFolderMiddleware: Middleware = store => next => async action => {
-	console.log('======== ABC ========')
 	if (action.type !== 'APP:PICK_FOLDER@CANCELED') return next(action)
 	const existingPaths = Object.keys(store.getState().git)
-	if (!existingPaths.length) app.quit()
+	if (!existingPaths.length) return store.dispatch({ type: 'APP:QUIT' })
 	return next(action)
 }
 

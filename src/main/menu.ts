@@ -1,4 +1,4 @@
-import { Menu, app } from 'electron/main'
+import { Menu } from 'electron/main'
 import { Dispatch } from 'src/shared/reducers'
 
 export const createMenu = (dispatch: Dispatch) =>
@@ -12,7 +12,7 @@ export const createMenu = (dispatch: Dispatch) =>
 					{
 						label: 'quit',
 						accelerator: 'CMD+Q',
-						click: () => app.quit(),
+						click: () => dispatch({ type: 'APP:QUIT' }),
 					},
 				],
 			},
