@@ -74,9 +74,12 @@ const fetchLog: Middleware = store => next => async action => {
 
 const refresh: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:REFRESH') return next(action)
-	fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
-	fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
-	return fetchBranch(store)(next)({ type: 'GIT:BRANCH', path: action.path })
+	const path = action.path
+	const isRepo = await simpleGit({ baseDir: path }).checkIsRepo()
+	if (!isRepo) return store.dispatch({ type: 'GIT:NOT_INITIALIZED', path })
+	store.dispatch({ type: 'GIT:STATUS', path })
+	store.dispatch({ type: 'GIT:LOG', path })
+	return store.dispatch({ type: 'GIT:BRANCH', path })
 }
 
 const switchBranch: Middleware = store => next => async action => {

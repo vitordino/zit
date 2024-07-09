@@ -59,6 +59,17 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 			if (!action.path) return state
 			console.log('---------CLOSING--------', action.path)
 			return Object.fromEntries(Object.entries(state).filter(([path]) => path !== action.path))
+		case 'GIT:NOT_INITIALIZED':
+			return {
+				...state,
+				[action.path]: {
+					...state[action.path],
+					status: {
+						...state[action.path]?.status,
+						state: 'not_initialized',
+					},
+				},
+			}
 		case 'GIT:STATUS@LOADING':
 			return {
 				...state,
