@@ -4,13 +4,31 @@ import type { Action, Middleware } from 'src/shared/reducers'
 
 export const pickFolderMiddleware: Middleware = store => next => async action => {
 	if (action.type !== 'APP:PICK_FOLDER') return next(action)
-	const existingPaths = Object.keys(store.getState().git)
+	// if already picking, ignore
+	if (store.getState().app.folderPickerState === 'picking') return next(action)
+
+	// open folder dialog
+	next({ type: 'APP:PICK_FOLDER@PICKING' })
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ['openDirectory'],
 		title: 'open local repository',
 	})
-	if (canceled && !filePaths?.[0] && !existingPaths.length) return next({ type: 'APP:QUIT' })
-	if (!canceled && filePaths?.[0]) return store.dispatch({ type: 'GIT:OPEN', path: filePaths[0] })
+	if (canceled || !filePaths.length) return store.dispatch({ type: 'APP:PICK_FOLDER@CANCELED' })
+	return store.dispatch({ type: 'APP:PICK_FOLDER@PICKED', payload: filePaths })
+}
+
+const pickFolderPickedMiddleware: Middleware = store => next => async action => {
+	if (action.type !== 'APP:PICK_FOLDER@PICKED') return next(action)
+
+	action.payload.forEach(path => store.dispatch({ type: 'GIT:OPEN', path }))
+	return next(action)
+}
+
+const cancelledPickFolderMiddleware: Middleware = store => next => async action => {
+	console.log('======== ABC ========')
+	if (action.type !== 'APP:PICK_FOLDER@CANCELED') return next(action)
+	const existingPaths = Object.keys(store.getState().git)
+	if (!existingPaths.length) app.quit()
 	return next(action)
 }
 
@@ -22,6 +40,8 @@ const quitMiddleware: Middleware = _store => next => async action => {
 
 const APP_MIDDLEWARE_MAP: Partial<Record<Action['type'], Middleware>> = {
 	'APP:PICK_FOLDER': pickFolderMiddleware,
+	'APP:PICK_FOLDER@PICKED': pickFolderPickedMiddleware,
+	'APP:PICK_FOLDER@CANCELED': cancelledPickFolderMiddleware,
 	'APP:QUIT': quitMiddleware,
 }
 

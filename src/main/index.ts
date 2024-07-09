@@ -40,10 +40,10 @@ app.whenReady().then(() => {
 	createMenu(store.dispatch)
 
 	app.on('activate', () => {
-		console.log({ windows: BrowserWindow.getAllWindows() })
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		if (BrowserWindow.getAllWindows().length === 0) createWindowsOrPickFolder()
+		if (BrowserWindow.getAllWindows().length === 0) return createWindowsOrPickFolder()
+		return app.focus({ steal: true })
 	})
 })
 
