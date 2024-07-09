@@ -1,6 +1,7 @@
 import { Menu, app } from 'electron/main'
+import { Dispatch } from 'src/shared/reducers'
 
-export const createMenu = () =>
+export const createMenu = (dispatch: Dispatch) =>
 	Menu.setApplicationMenu(
 		Menu.buildFromTemplate([
 			{
@@ -20,13 +21,15 @@ export const createMenu = () =>
 				type: 'submenu',
 				submenu: [
 					{
+						label: 'Open...',
+						accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O',
+						click: () => dispatch({ type: 'APP:PICK_FOLDER' }),
+					},
+					{
 						label: 'Open Recent',
 						type: 'submenu',
 						role: 'recentDocuments',
-						submenu: [
-							{ label: 'Clear Recent', role: 'clearRecentDocuments' },
-							{ type: 'separator' },
-						],
+						submenu: [{ label: 'Clear Recent', role: 'clearRecentDocuments' }],
 					},
 				],
 			},

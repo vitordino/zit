@@ -10,11 +10,13 @@ import {
 import { settingsReducer } from './settings'
 import { gitReducer } from './git'
 import { notificationsReducer } from './notifications'
+import { appReducer } from './app'
 
 export const reducer = combineReducers({
 	settings: settingsReducer,
 	git: gitReducer,
 	notifications: notificationsReducer,
+	app: appReducer,
 })
 
 export type Action = ActionFromReducer<typeof reducer> | { type: 'GLOBAL:LOAD' }

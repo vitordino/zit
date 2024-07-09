@@ -1,5 +1,4 @@
 import { app, BrowserWindow, ipcMain } from 'electron/main'
-import { dialog } from 'electron/main'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { mainReduxBridge } from 'reduxtron/main'
 
@@ -18,17 +17,8 @@ store.subscribe(() => tray.setState(store.getState()))
 // otherwise open file dialog and update store to include a path
 const createWindowsOrPickFolder = async () => {
 	const existingPaths = Object.keys(store.getState().git)
-	console.log({ existingPaths })
-	if (existingPaths.length) {
-		return existingPaths.forEach(path => store.dispatch({ type: 'GIT:OPEN', path }))
-	}
-	const { canceled, filePaths } = await dialog.showOpenDialog({
-		properties: ['openDirectory'],
-		title: 'open local repository',
-	})
-	console.log({ canceled, filePaths })
-	if (canceled || !filePaths?.length) return app.quit()
-	store.dispatch({ type: 'GIT:OPEN', path: filePaths[0] })
+	if (!existingPaths.length) return store.dispatch({ type: 'APP:PICK_FOLDER' })
+	return existingPaths.forEach(path => store.dispatch({ type: 'GIT:OPEN', path }))
 }
 
 // This method will be called when Electron has finished
@@ -47,7 +37,7 @@ app.whenReady().then(() => {
 
 	createWindowsOrPickFolder()
 	tray.create()
-	createMenu()
+	createMenu(store.dispatch)
 
 	app.on('activate', () => {
 		console.log({ windows: BrowserWindow.getAllWindows() })
