@@ -1,7 +1,14 @@
 import { Reducer } from 'redux'
 import { StatusResult, BranchSummary, LogResult } from 'simple-git'
 
-export type FetchState = 'initial' | 'idle' | 'loading' | 'revalidating' | 'error'
+export type FetchState =
+	| 'initial'
+	| 'not_initialized'
+	| 'idle'
+	| 'loading'
+	| 'revalidating'
+	| 'error'
+
 export type GitStatusData = Omit<StatusResult, 'isClean'> & { isClean: boolean }
 export type GitStatus = { state: FetchState; data: GitStatusData | null; error: string | null }
 export type GitBranch = { state: FetchState; data: BranchSummary | null; error: string | null }
@@ -9,40 +16,36 @@ export type GitLog = { state: FetchState; data: LogResult | null; error: string 
 export type GitRepo = { path?: string; status: GitStatus; branch: GitBranch; log: GitLog }
 export type Git = Record<string, GitRepo>
 
-export const EMPTY_GIT_ACTION = { type: '' } as const
-export type EmptyGitAction = typeof EMPTY_GIT_ACTION
-
-export type GitAction =
-	| EmptyGitAction
-	| ({ path: string } & (
-			| { type: 'GIT:OPEN' }
-			| { type: 'GIT:LOAD'; payload: Git }
-			| { type: 'GIT:CLOSE' }
-			| { type: 'GIT:STATUS' }
-			| { type: 'GIT:STATUS@LOADING' }
-			| { type: 'GIT:STATUS@LOADED'; payload: GitRepo['status']['data'] }
-			| { type: 'GIT:STATUS@ERROR'; payload: GitRepo['status']['error'] }
-			| { type: 'GIT:BRANCH' }
-			| { type: 'GIT:BRANCH@LOADING' }
-			| { type: 'GIT:BRANCH@LOADED'; payload: GitRepo['branch']['data'] }
-			| { type: 'GIT:BRANCH@ERROR'; payload: GitRepo['branch']['error'] }
-			| { type: 'GIT:LOG' }
-			| { type: 'GIT:LOG@LOADING' }
-			| { type: 'GIT:LOG@LOADED'; payload: GitRepo['log']['data'] }
-			| { type: 'GIT:LOG@ERROR'; payload: GitRepo['log']['error'] }
-			// the combination of all fetchers above
-			| { type: 'GIT:REFRESH' }
-			// commands
-			| { type: 'GIT:CHANGE_BRANCH'; payload: string }
-			| { type: 'GIT:STAGE'; payload: string }
-			| { type: 'GIT:STAGE_ALL' }
-			| { type: 'GIT:UNSTAGE'; payload: string }
-			| { type: 'GIT:UNSTAGE_ALL' }
-			| { type: 'GIT:COMMIT'; payload: string }
-			| { type: 'GIT:UNDO_COMMIT'; payload: string }
-			| { type: 'GIT:PUSH' }
-			| { type: 'GIT:PULL' }
-	  ))
+export type GitAction = { path: string } & (
+	| { type: 'GIT:OPEN' }
+	| { type: 'GIT:LOAD'; payload: Git }
+	| { type: 'GIT:NOT_INITIALIZED' }
+	| { type: 'GIT:CLOSE' }
+	| { type: 'GIT:STATUS' }
+	| { type: 'GIT:STATUS@LOADING' }
+	| { type: 'GIT:STATUS@LOADED'; payload: GitRepo['status']['data'] }
+	| { type: 'GIT:STATUS@ERROR'; payload: GitRepo['status']['error'] }
+	| { type: 'GIT:BRANCH' }
+	| { type: 'GIT:BRANCH@LOADING' }
+	| { type: 'GIT:BRANCH@LOADED'; payload: GitRepo['branch']['data'] }
+	| { type: 'GIT:BRANCH@ERROR'; payload: GitRepo['branch']['error'] }
+	| { type: 'GIT:LOG' }
+	| { type: 'GIT:LOG@LOADING' }
+	| { type: 'GIT:LOG@LOADED'; payload: GitRepo['log']['data'] }
+	| { type: 'GIT:LOG@ERROR'; payload: GitRepo['log']['error'] }
+	// the combination of all fetchers above
+	| { type: 'GIT:REFRESH' }
+	// commands
+	| { type: 'GIT:CHANGE_BRANCH'; payload: string }
+	| { type: 'GIT:STAGE'; payload: string }
+	| { type: 'GIT:STAGE_ALL' }
+	| { type: 'GIT:UNSTAGE'; payload: string }
+	| { type: 'GIT:UNSTAGE_ALL' }
+	| { type: 'GIT:COMMIT'; payload: string }
+	| { type: 'GIT:UNDO_COMMIT'; payload: string }
+	| { type: 'GIT:PUSH' }
+	| { type: 'GIT:PULL' }
+)
 
 const INITIAL = { state: 'initial', data: null, error: null } as const
 export const INITIAL_REPO_STATE: GitRepo = { status: INITIAL, branch: INITIAL, log: INITIAL }

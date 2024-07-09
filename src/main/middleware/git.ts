@@ -3,21 +3,21 @@ import simpleGit, { ResetMode } from 'simple-git'
 
 import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/shared/lib/strip'
 import type { Middleware } from 'src/shared/reducers'
-import { EMPTY_GIT_ACTION, GitAction } from 'src/shared/reducers/git'
+import { GitAction } from 'src/shared/reducers/git'
 import { createWindow } from 'src/main/window'
 
 const openRepo: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:OPEN') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:OPEN') return next(action)
 	// user asked to open an already open project
 	// [TODO]: focus the window for that project
-	if (!action.path || store.getState().git[action.path]?.path) return EMPTY_GIT_ACTION
+	if (!action.path || store.getState().git[action.path]?.path) return next(action)
 	createWindow({ gitPath: action.path })
 	app.addRecentDocument(action.path)
 	return next(action)
 }
 
 const fetchStatus: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:STATUS') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:STATUS') return next(action)
 	// if loading, don’t fire a second fetch request — next(action)
 	if (store.getState().git[action.path]?.status?.state === 'loading') {
 		return next({ type: 'GIT:STATUS@LOADING', path: action.path })
@@ -40,7 +40,7 @@ const fetchStatus: Middleware = store => next => async action => {
 }
 
 const fetchBranch: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:BRANCH') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:BRANCH') return next(action)
 	// if loading, don’t fire a second fetch request — next(action)
 	if (store.getState().git[action.path]?.branch?.state === 'loading')
 		return next({ type: 'GIT:BRANCH@LOADING', path: action.path })
@@ -58,7 +58,7 @@ const fetchBranch: Middleware = store => next => async action => {
 }
 
 const fetchLog: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:LOG') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:LOG') return next(action)
 	// if loading, don’t fire a second fetch request — next(action)
 	if (store.getState().git[action.path]?.log?.state === 'loading') {
 		return next({ type: 'GIT:LOG@LOADING', path: action.path })
@@ -73,14 +73,14 @@ const fetchLog: Middleware = store => next => async action => {
 }
 
 const refresh: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:REFRESH') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:REFRESH') return next(action)
 	fetchStatus(store)(next)({ type: 'GIT:STATUS', path: action.path })
 	fetchLog(store)(next)({ type: 'GIT:LOG', path: action.path })
 	return fetchBranch(store)(next)({ type: 'GIT:BRANCH', path: action.path })
 }
 
 const switchBranch: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:CHANGE_BRANCH') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:CHANGE_BRANCH') return next(action)
 	const isClean = store.getState().git?.[action.path]?.status?.data?.isClean
 	if (!isClean)
 		return next({
@@ -100,7 +100,7 @@ const switchBranch: Middleware = store => next => async action => {
 }
 
 const stageFile: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:STAGE') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:STAGE') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).add(action.payload)
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -115,7 +115,7 @@ const stageFile: Middleware = store => next => async action => {
 }
 
 const stageAll: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:STAGE_ALL') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:STAGE_ALL') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).add('.')
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -130,7 +130,7 @@ const stageAll: Middleware = store => next => async action => {
 }
 
 const unstageFile: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:UNSTAGE') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:UNSTAGE') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).reset(ResetMode.MIXED, ['--', action.payload])
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -145,7 +145,7 @@ const unstageFile: Middleware = store => next => async action => {
 }
 
 const unstageAll: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:UNSTAGE_ALL') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:UNSTAGE_ALL') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).reset(ResetMode.MIXED, ['--'])
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -159,7 +159,7 @@ const unstageAll: Middleware = store => next => async action => {
 }
 
 const commit: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:COMMIT') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:COMMIT') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).commit(action.payload)
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
@@ -174,7 +174,7 @@ const commit: Middleware = store => next => async action => {
 }
 
 const undoCommit: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:UNDO_COMMIT') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:UNDO_COMMIT') return next(action)
 
 	const latest = store.getState().git[action.path]?.log.data?.latest?.hash
 	// don’t let user undo if not on the latest
@@ -196,7 +196,7 @@ const undoCommit: Middleware = store => next => async action => {
 }
 
 const push: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:PUSH') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:PUSH') return next(action)
 	try {
 		await simpleGit({ baseDir: action.path }).push()
 
@@ -212,7 +212,7 @@ const push: Middleware = store => next => async action => {
 }
 
 const pull: Middleware = store => next => async action => {
-	if (action.type !== 'GIT:PULL') return EMPTY_GIT_ACTION
+	if (action.type !== 'GIT:PULL') return next(action)
 	try {
 		const result = await simpleGit({ baseDir: action.path }).pull()
 		console.log({ result })
