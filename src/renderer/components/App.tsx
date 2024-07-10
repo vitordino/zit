@@ -4,21 +4,27 @@ import { FilePanel } from 'src/renderer/components/FilePanel'
 import { DebugWrapper } from 'src/renderer/components/DebugWrapper'
 import { CommitLine } from 'src/renderer/components/CommitLine'
 import { CommitLog } from 'src/renderer/components/CommitLog'
+import { MatchState } from 'src/renderer/components/MatchState'
 
 const router = createBrowserRouter([
 	{
 		path: '/',
 		element: (
 			<>
-				<DebugWrapper>
-					<Header />
+				<MatchState match={state => state !== 'not_initialized'}>
 					<FilePanel />
 					<CommitLine />
 					<CommitLog />
-				</DebugWrapper>
+				</MatchState>
+				<MatchState match={state => state === 'not_initialized'}>not initialized</MatchState>
 			</>
 		),
 	},
 ])
 
-export const App = () => <RouterProvider router={router} />
+export const App = () => (
+	<DebugWrapper>
+		<Header />
+		<RouterProvider router={router} />
+	</DebugWrapper>
+)
