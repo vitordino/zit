@@ -25,6 +25,20 @@ const closeRepo: Middleware = _store => next => async action => {
 	return next(action)
 }
 
+const initializeRepo: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:INITIALIZE') return next(action)
+	const { path } = action
+	if (store.getState().git?.[path].status.state !== 'not_initialized') return next(action)
+	next({ type: 'GIT:INITIALIZE@LOADING', path })
+	try {
+		await simpleGit({ baseDir: path }).init()
+		next({ type: 'GIT:INITIALIZE@LOADED', path })
+	} catch {
+		next({ type: 'GIT:INITIALIZE@ERROR', path })
+	}
+	return store.dispatch({ type: 'GIT:REFRESH', path: action.path })
+}
+
 const fetchStatus: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:STATUS') return next(action)
 	// if loading, don’t fire a second fetch request — next(action)
@@ -242,6 +256,7 @@ const pull: Middleware = store => next => async action => {
 const GIT_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:OPEN': openRepo,
 	'GIT:CLOSE': closeRepo,
+	'GIT:INITIALIZE': initializeRepo,
 	'GIT:STATUS': fetchStatus,
 	'GIT:BRANCH': fetchBranch,
 	'GIT:LOG': fetchLog,

@@ -4,6 +4,7 @@ import { StatusResult, BranchSummary, LogResult } from 'simple-git'
 export type FetchState =
 	| 'initial'
 	| 'not_initialized'
+	| 'initializing'
 	| 'idle'
 	| 'loading'
 	| 'revalidating'
@@ -21,6 +22,9 @@ export type GitAction = { path: string } & (
 	| { type: 'GIT:LOAD'; payload: Git }
 	| { type: 'GIT:NOT_INITIALIZED' }
 	| { type: 'GIT:INITIALIZE' }
+	| { type: 'GIT:INITIALIZE@LOADING' }
+	| { type: 'GIT:INITIALIZE@LOADED' }
+	| { type: 'GIT:INITIALIZE@ERROR' }
 	| { type: 'GIT:CLOSE' }
 	| { type: 'GIT:STATUS' }
 	| { type: 'GIT:STATUS@LOADING' }
@@ -63,10 +67,43 @@ export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
 			return {
 				...state,
 				[action.path]: {
+					...INITIAL_REPO_STATE,
+					status: {
+						...INITIAL_REPO_STATE.status,
+						state: 'not_initialized',
+					},
+				},
+			}
+		case 'GIT:INITIALIZE@LOADING':
+			return {
+				...state,
+				[action.path]: {
+					...state[action.path],
+					status: {
+						...state[action.path]?.status,
+						state: 'initializing',
+					},
+				},
+			}
+		case 'GIT:INITIALIZE@ERROR':
+			return {
+				...state,
+				[action.path]: {
 					...state[action.path],
 					status: {
 						...state[action.path]?.status,
 						state: 'not_initialized',
+					},
+				},
+			}
+		case 'GIT:INITIALIZE@LOADED':
+			return {
+				...state,
+				[action.path]: {
+					...state[action.path],
+					status: {
+						...state[action.path]?.status,
+						state: 'idle',
 					},
 				},
 			}

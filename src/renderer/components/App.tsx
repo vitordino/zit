@@ -6,6 +6,7 @@ import { CommitLine } from 'src/renderer/components/CommitLine'
 import { CommitLog } from 'src/renderer/components/CommitLog'
 import { NotInitializedModal } from './NotInitializedModal'
 
+// we’re using react-router for sharing state over query params, do not remove
 const router = createBrowserRouter([
 	{
 		path: '/',
