@@ -20,6 +20,7 @@ export type GitAction = { path: string } & (
 	| { type: 'GIT:OPEN' }
 	| { type: 'GIT:LOAD'; payload: Git }
 	| { type: 'GIT:NOT_INITIALIZED' }
+	| { type: 'GIT:INITIALIZE' }
 	| { type: 'GIT:CLOSE' }
 	| { type: 'GIT:STATUS' }
 	| { type: 'GIT:STATUS@LOADING' }
@@ -51,13 +52,12 @@ const INITIAL = { state: 'initial', data: null, error: null } as const
 export const INITIAL_REPO_STATE: GitRepo = { status: INITIAL, branch: INITIAL, log: INITIAL }
 
 export const gitReducer: Reducer<Git, GitAction> = (state = {}, action) => {
+	if (!action.path) return state
 	switch (action.type) {
 		case 'GIT:OPEN':
-			if (!action.path) return state
 			return { ...state, [action.path]: { ...INITIAL_REPO_STATE, path: action.path } }
 		case 'GIT:CLOSE':
 			if (!action.path) return state
-			console.log('---------CLOSING--------', action.path)
 			return Object.fromEntries(Object.entries(state).filter(([path]) => path !== action.path))
 		case 'GIT:NOT_INITIALIZED':
 			return {

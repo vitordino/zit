@@ -24,7 +24,7 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 			nodeIntegration: false,
 		},
 	})
-
+	mainWindow.setTitle(gitPath)
 	mainWindow.webContents.executeJavaScript(`globalThis.gitPath = '${gitPath}'`)
 
 	ipcMain.on('subscribe', async (state: unknown) => {
@@ -38,7 +38,9 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 		return mainWindow.show()
 	})
 
-	mainWindow.on('close', () => store.dispatch({ type: 'GIT:CLOSE', path: gitPath }))
+	mainWindow.on('closed', () => {
+		store.dispatch({ type: 'GIT:CLOSE', path: gitPath })
+	})
 
 	mainWindow.webContents.setWindowOpenHandler(details => {
 		shell.openExternal(details.url)

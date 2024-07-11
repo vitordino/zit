@@ -5,6 +5,7 @@ import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/s
 import type { Middleware } from 'src/shared/reducers'
 import { GitAction } from 'src/shared/reducers/git'
 import { createWindow } from 'src/main/window'
+import { BrowserWindow } from 'electron/main'
 
 const openRepo: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:OPEN') return next(action)
@@ -13,6 +14,14 @@ const openRepo: Middleware = store => next => async action => {
 	if (!action.path || store.getState().git[action.path]?.path) return next(action)
 	createWindow({ gitPath: action.path })
 	app.addRecentDocument(action.path)
+	return next(action)
+}
+
+const closeRepo: Middleware = _store => next => async action => {
+	if (action.type !== 'GIT:CLOSE') return next(action)
+	BrowserWindow.getAllWindows()
+		.filter(x => x.getTitle() === action.path)
+		.forEach(x => x.close())
 	return next(action)
 }
 
@@ -232,6 +241,7 @@ const pull: Middleware = store => next => async action => {
 
 const GIT_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:OPEN': openRepo,
+	'GIT:CLOSE': closeRepo,
 	'GIT:STATUS': fetchStatus,
 	'GIT:BRANCH': fetchBranch,
 	'GIT:LOG': fetchLog,

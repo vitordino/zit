@@ -38,6 +38,7 @@ app.whenReady().then(() => {
 	createWindowsOrPickFolder()
 	tray.create()
 	createMenu(store.dispatch)
+	app.focus()
 
 	app.on('activate', () => {
 		// On macOS it's common to re-create a window in the app when the
@@ -48,6 +49,7 @@ app.whenReady().then(() => {
 })
 
 app.on('open-file', (event, path) => {
+	if (!path) return
 	event.preventDefault()
 	store.dispatch({ type: 'GIT:OPEN', path })
 })

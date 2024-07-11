@@ -6,7 +6,7 @@ export type AppState = {
 	folderPickerState: FolderPickerState
 }
 
-const INITIAL_STATE: AppState = { folderPickerState: 'closed' }
+export const INITIAL_STATE: AppState = { folderPickerState: 'closed' }
 
 export type AppAction =
 	| { type: 'APP:PICK_FOLDER' }

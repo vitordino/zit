@@ -3,6 +3,7 @@ import { app } from 'electron'
 import { writeFile, readFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { INITIAL_STATE as INITIAL_NOTIFICATION_STATE } from 'src/shared/reducers/notifications'
+import { INITIAL_STATE as INITIAL_APP_STATE } from 'src/shared/reducers/app'
 import { INITIAL_STATE as INITIAL_SETTINGS_STATE } from 'src/shared/reducers/settings'
 
 const folder = join(app.getPath('appData'), 'zit')
@@ -10,6 +11,7 @@ const path = join(folder, 'state.json')
 const options = { encoding: 'utf-8' } as const
 const fallbackState: State = {
 	git: {},
+	app: INITIAL_APP_STATE,
 	notifications: INITIAL_NOTIFICATION_STATE,
 	settings: INITIAL_SETTINGS_STATE,
 }
