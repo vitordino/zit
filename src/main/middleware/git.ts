@@ -1,5 +1,5 @@
 import { app } from 'electron'
-import simpleGit, { ResetMode } from 'simple-git'
+import simpleGit, { CheckRepoActions, ResetMode } from 'simple-git'
 
 import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/shared/lib/strip'
 import type { Middleware } from 'src/shared/reducers'
@@ -75,7 +75,7 @@ const fetchLog: Middleware = store => next => async action => {
 const refresh: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:REFRESH') return next(action)
 	const path = action.path
-	const isRepo = await simpleGit({ baseDir: path }).checkIsRepo()
+	const isRepo = await simpleGit({ baseDir: path }).checkIsRepo(CheckRepoActions.IS_REPO_ROOT)
 	if (!isRepo) return store.dispatch({ type: 'GIT:NOT_INITIALIZED', path })
 	store.dispatch({ type: 'GIT:STATUS', path })
 	store.dispatch({ type: 'GIT:LOG', path })
@@ -230,7 +230,7 @@ const pull: Middleware = store => next => async action => {
 	}
 }
 
-const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
+const GIT_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:OPEN': openRepo,
 	'GIT:STATUS': fetchStatus,
 	'GIT:BRANCH': fetchBranch,
@@ -248,7 +248,7 @@ const FETCHER_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {
-	const fetcher = FETCHER_ACTION_MAP[action.type]
+	const fetcher = GIT_ACTION_MAP[action.type]
 	if (!fetcher) return next(action)
 	return fetcher(store)(next)(action)
 }
