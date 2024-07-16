@@ -54,8 +54,8 @@ export const FilePanelBase = ({
 	onStageAll,
 	onUnstageAll,
 }: FilePanelBaseProps) => {
-	const unstaged = status?.data?.files.filter(x => !status.data?.staged.includes(x.path))
-	const staged = status?.data?.files.filter(x => status.data?.staged.includes(x.path))
+	const unstaged = status?.data?.files.filter(x => x.working_dir !== ' ')
+	const staged = status?.data?.files.filter(x => x.index !== ' ' && x.working_dir !== '?')
 	return (
 		<CompositeProvider focusLoop virtualFocus>
 			<Composite
@@ -64,7 +64,7 @@ export const FilePanelBase = ({
 			>
 				<CompositeGroup className='ring-border basis-1/2 flex-grow-0 ring-1 overflow-auto scroll-pt-7'>
 					<div className='flex w-full sticky top-0'>
-						<FilePanelTitle>unstaged files</FilePanelTitle>
+						<FilePanelTitle>unstaged changes</FilePanelTitle>
 						<CompositeItem
 							className='border-border border-l border-b px-2 py-1 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 							onClick={onStageAll}
@@ -77,7 +77,7 @@ export const FilePanelBase = ({
 
 				<CompositeGroup className='ring-border basis-1/2 flex-grow-0 ring-1 overflow-auto scroll-pt-7'>
 					<div className='flex w-full sticky top-0'>
-						<FilePanelTitle>staged files</FilePanelTitle>
+						<FilePanelTitle>staged changes</FilePanelTitle>
 						<CompositeItem
 							className='border-border border-l border-b px-2 py-1 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 							onClick={onUnstageAll}
