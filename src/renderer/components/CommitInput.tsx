@@ -1,7 +1,7 @@
 import { FormEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { useDispatch, useGitStore } from '../hooks/useStore'
-import { CommitLineButton } from './Button'
+import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
+import { useCommitMessage } from 'src/renderer/hooks/useCommitMessage'
+import { CommitLineButton } from 'src/renderer/components/Button'
 
 type CommitInputBaseProps = {
 	onCommit?: (message: string) => void
@@ -41,18 +41,11 @@ export const CommitInputBase = ({
 }
 
 export const CommitInput = () => {
-	const [search, setSearch] = useSearchParams()
+	const [message, setMessage] = useCommitMessage()
 	const commitDisabled = useGitStore(x => !x?.status?.data?.staged.length)
 	const path = useGitStore(x => x?.path)
 	const dispatch = useDispatch()
 	const onCommit = (payload: string) => path && dispatch({ type: 'GIT:COMMIT', path, payload })
-
-	const message = search.get('message') ?? ''
-	const setMessage = (message: string) =>
-		setSearch(x => {
-			x.set('message', message)
-			return x
-		})
 
 	return (
 		<CommitInputBase

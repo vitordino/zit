@@ -1,9 +1,10 @@
-import { useSearchParams } from 'react-router-dom'
 import { CompositeProvider, Composite, CompositeItem } from '@ariakit/react/composite'
 
 import { GitLog } from 'src/shared/reducers/git'
 import { getRelativeTimeString } from 'src/shared/lib/time'
 import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
+import { useIsLogVisible } from 'src/renderer/hooks/useIsLogVisible'
+import { useCommitMessage } from 'src/renderer/hooks/useCommitMessage'
 
 type CommitLogBaseProps = { log?: GitLog['data']; onUndo: (hex: string) => void }
 export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
@@ -36,18 +37,16 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 }
 
 export const CommitLog = () => {
-	const [search, setSearch] = useSearchParams()
+	const [isLogVisible] = useIsLogVisible()
+	const [_, setCommitMessage] = useCommitMessage()
 	const log = useGitStore(x => x?.log?.data)
 	const path = useGitPath()
 	const dispatch = useDispatch()
 	const onUndo = (payload: string) => {
 		if (!path) return
-		setSearch(x => {
-			x.set('message', log?.latest?.message ?? '')
-			return x
-		})
+		setCommitMessage(log?.latest?.message ?? '')
 		dispatch({ type: 'GIT:UNDO_COMMIT', path, payload })
 	}
-	if (search.get('log') !== 'true') return null
+	if (isLogVisible) return null
 	return <CommitLogBase log={log} onUndo={onUndo} />
 }

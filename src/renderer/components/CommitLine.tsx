@@ -1,8 +1,7 @@
-import { useSearchParams } from 'react-router-dom'
-
+import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
+import { useIsLogVisible } from 'src/renderer/hooks/useIsLogVisible'
 import { CommitLineButton } from 'src/renderer/components/Button'
 import { CommitInput } from 'src/renderer/components/CommitInput'
-import { useDispatch, useGitStore } from '../hooks/useStore'
 
 type CommitLineBaseProps = {
 	log?: boolean
@@ -31,23 +30,19 @@ export const CommitLineBase = ({
 )
 
 export const CommitLine = () => {
-	const [search, setSearch] = useSearchParams()
+	const [isLogVisible, setLogVisible] = useIsLogVisible()
 	const behind = useGitStore(x => x?.status?.data?.behind)
 	const ahead = useGitStore(x => x?.status?.data?.ahead)
 	const path = useGitStore(x => x?.path)
 	const dispatch = useDispatch()
-	const log = search.get('log') === 'true' ? true : false
-	const toggleLog = () =>
-		setSearch(x => {
-			x.set('log', log ? 'false' : 'true')
-			return x
-		})
+	const toggleLog = () => setLogVisible(x => !x)
+
 	const onPull = () => path && dispatch({ type: 'GIT:PULL', path })
 	const onPush = () => path && dispatch({ type: 'GIT:PUSH', path })
 
 	return (
 		<CommitLineBase
-			log={log}
+			log={isLogVisible}
 			toggleLog={toggleLog}
 			behind={behind}
 			ahead={ahead}
