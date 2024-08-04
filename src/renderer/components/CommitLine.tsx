@@ -20,7 +20,7 @@ export const CommitLineBase = ({
 	onPush,
 }: CommitLineBaseProps) => (
 	<div className='flex'>
-		<CommitLineButton data-active={log} onClick={toggleLog}>
+		<CommitLineButton data-active={log} onClick={toggleLog} className='ml-0'>
 			log
 		</CommitLineButton>
 		<CommitInput />
