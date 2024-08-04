@@ -108,15 +108,16 @@ const refresh: Middleware = store => next => async action => {
 const switchBranch: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:CHANGE_BRANCH') return next(action)
 	const isClean = store.getState().git?.[action.path]?.status?.data?.isClean
+	console.log('switchBranch', { action, isClean })
 	if (!isClean)
 		return next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: 'branch is not clean, commit or stash before changing branches' },
 		})
 	try {
+		await simpleGit({ baseDir: action.path }).checkout(action.payload)
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	} catch (e) {
-		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: { body: 'issue while changing branches' },
