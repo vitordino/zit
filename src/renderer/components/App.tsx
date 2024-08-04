@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { Header } from 'src/renderer/components/Header'
 import { FilePanel } from 'src/renderer/components/FilePanel'
 import { DebugWrapper } from 'src/renderer/components/DebugWrapper'
@@ -7,7 +7,7 @@ import { CommitLog } from 'src/renderer/components/CommitLog'
 import { NotInitializedModal } from './NotInitializedModal'
 
 // we’re using react-router for sharing state over query params, do not remove
-const router = createBrowserRouter([
+const router = createMemoryRouter([
 	{
 		path: '/',
 		element: (
