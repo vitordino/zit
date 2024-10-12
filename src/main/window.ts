@@ -25,7 +25,9 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 		},
 	})
 	mainWindow.setTitle(gitPath)
-	mainWindow.webContents.executeJavaScript(`globalThis.gitPath = '${gitPath}'`)
+	mainWindow.webContents.executeJavaScript(
+		`globalThis.sessionStorage.setItem('git-path', '${gitPath}')`,
+	)
 
 	ipcMain.on('subscribe', async (state: unknown) => {
 		if (mainWindow?.isDestroyed()) return

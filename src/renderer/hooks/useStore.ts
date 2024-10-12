@@ -3,8 +3,7 @@ import { createUseStore } from 'reduxtron/zustand-store'
 import type { Action, State } from 'src/shared/reducers'
 import type { GitRepo } from 'src/shared/reducers/git'
 
-// @ts-expect-error write proper declaration later
-export const useGitPath = (): string => window.gitPath
+export const useGitPath = (): string | null => globalThis.sessionStorage.getItem('git-path')
 
 export const useStore = createUseStore<State, Action>(window.reduxtron)
 
