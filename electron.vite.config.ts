@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
 	main: {
-		plugins: [tsconfigPaths(), externalizeDepsPlugin()],
+		plugins: [tsconfigPaths(), externalizeDepsPlugin({ exclude: ['nanoid'] })],
 	},
 	preload: {
 		plugins: [tsconfigPaths(), externalizeDepsPlugin({ exclude: ['reduxtron'] })],

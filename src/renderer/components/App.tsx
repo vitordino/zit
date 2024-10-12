@@ -3,7 +3,8 @@ import { FilePanel } from 'src/renderer/components/FilePanel'
 import { DebugWrapper } from 'src/renderer/components/DebugWrapper'
 import { CommitLine } from 'src/renderer/components/CommitLine'
 import { CommitLog } from 'src/renderer/components/CommitLog'
-import { NotInitializedModal } from './NotInitializedModal'
+import { NotInitializedModal } from 'src/renderer/components/NotInitializedModal'
+import { NotificationsDrawer } from 'src/renderer/components/NotificationsDrawer'
 
 export const App = () => (
 	<DebugWrapper>
@@ -12,5 +13,6 @@ export const App = () => (
 		<CommitLine />
 		<CommitLog />
 		<NotInitializedModal />
+		<NotificationsDrawer />
 	</DebugWrapper>
 )

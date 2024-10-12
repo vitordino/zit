@@ -1,4 +1,5 @@
 import { app } from 'electron'
+import { nanoid } from 'nanoid'
 import simpleGit, { CheckRepoActions, ResetMode } from 'simple-git'
 
 import { stripBranchSummary, stripFileStatusResult, stripLogResult } from 'src/shared/lib/strip'
@@ -112,7 +113,11 @@ const switchBranch: Middleware = store => next => async action => {
 	if (!isClean)
 		return next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: 'branch is not clean, commit or stash before changing branches' },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: 'branch is not clean, commit or stash before changing branches',
+			},
 		})
 	try {
 		await simpleGit({ baseDir: action.path }).checkout(action.payload)
@@ -120,7 +125,11 @@ const switchBranch: Middleware = store => next => async action => {
 	} catch (e) {
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: 'issue while changing branches' },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: 'issue while changing branches',
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -135,7 +144,11 @@ const stageFile: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while staging file: ${action.payload}` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while staging file: ${action.payload}`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -150,7 +163,11 @@ const stageAll: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while staging all files` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while staging all files`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -165,7 +182,11 @@ const unstageFile: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while staging file: ${action.payload}` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while staging file: ${action.payload}`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -179,7 +200,11 @@ const unstageAll: Middleware = store => next => async action => {
 	} catch {
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while staging all files` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while staging all files`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -194,7 +219,11 @@ const commit: Middleware = store => next => async action => {
 		console.log(e)
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while commiting` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while commiting`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -216,7 +245,11 @@ const undoCommit: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while undoing commit: ${action.payload}` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while undoing commit: ${action.payload}`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -232,7 +265,11 @@ const push: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while pushing` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while pushing`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
@@ -248,7 +285,11 @@ const pull: Middleware = store => next => async action => {
 		console.log({ e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
-			payload: { body: `issue while pushing` },
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue while pushing`,
+			},
 		})
 		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
 	}
