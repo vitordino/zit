@@ -12,4 +12,5 @@ body {
 
 textarea {
 	field-sizing: content;
+	background-color: transparent;
 }
