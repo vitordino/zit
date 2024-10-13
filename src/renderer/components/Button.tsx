@@ -22,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 				<Ariakit.TooltipProvider>
 					<Ariakit.TooltipAnchor
 						className={className}
-						render={x => <Button {...props} {...x} ref={ref} />}
+						render={x => <Button {...x} {...props} ref={ref} />}
 					/>
 					<Ariakit.Tooltip className='py-1 px-2 text-sm bg-panel-background border border-border-variant rounded-md'>
 						{tooltip}
