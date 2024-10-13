@@ -6,6 +6,7 @@ import { CommitLine } from 'src/renderer/components/CommitLine'
 import { CommitLog } from 'src/renderer/components/CommitLog'
 import { NotInitializedModal } from 'src/renderer/components/NotInitializedModal'
 import { NotificationsDrawer } from 'src/renderer/components/NotificationsDrawer'
+import { FocusListener } from 'src/renderer/components/FocusListener'
 
 export const App = () => (
 	<GitPathProvider>
@@ -17,5 +18,6 @@ export const App = () => (
 			<NotInitializedModal />
 			<NotificationsDrawer />
 		</DebugWrapper>
+		<FocusListener />
 	</GitPathProvider>
 )
