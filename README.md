@@ -8,6 +8,8 @@
 
 > not in any specific order
 
+- [ ] open recent
+- [ ] open through cli args
 - [ ] hotkeys (using electron menubar)
 - [ ] command palette
 - [ ] progress indicator + disabled state (for pull/push etc)
