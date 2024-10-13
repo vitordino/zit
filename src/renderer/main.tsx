@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { getGitPath } from 'src/renderer/hooks/useStore'
 import { App } from 'src/renderer/components/App'
 import 'src/renderer/main.css'
 
@@ -10,5 +11,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 
 // @ts-expect-error write proper declaration later
-const refresh = () => window.reduxtron.dispatch({ type: 'GIT:REFRESH', path: window.gitPath })
+const refresh = () => window.reduxtron.dispatch({ type: 'GIT:REFRESH', path: getGitPath() })
 window.addEventListener('focus', refresh)
