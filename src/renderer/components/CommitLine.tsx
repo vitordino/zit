@@ -20,7 +20,7 @@ export const CommitLineBase = ({
 	onPull,
 	onPush,
 }: CommitLineBaseProps) => (
-	<div className='flex bg-editor-subheader-background items-center ring-1 ring-border ring-inset'>
+	<div className='flex bg-editor-subheader-background items-center relative border-t border-border'>
 		<IconButton
 			tooltip='log'
 			iconId='history'
