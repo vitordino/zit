@@ -6,7 +6,6 @@ import {
 	CompositeItem,
 	CompositeGroup,
 	CompositeGroupLabel,
-	CompositeItemProps,
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
@@ -14,6 +13,7 @@ import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStor
 import { ContextMenu, ContextMenuItem } from 'src/renderer/components/ContextMenu'
 import { Icon } from 'src/renderer/components/Icon'
 import { IconButton } from 'src/renderer/components/Button'
+import { FileItem } from 'src/renderer/components/FileItem'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
@@ -28,20 +28,6 @@ const UnstagedContextMenu = ({ onStage, onDiscardChanges }: UnstagedContextMenuP
 		<ContextMenuItem onClick={onStage}>stage</ContextMenuItem>
 		<ContextMenuItem onClick={onDiscardChanges}>discard changes</ContextMenuItem>
 	</>
-)
-
-type FileItemProps = FileStatusResult & CompositeItemProps
-const FileItem = ({ path, working_dir, index, from: _from, ...props }: FileItemProps) => (
-	<CompositeItem
-		itemID={path}
-		className='w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item=true]:bg-element-selected flex items-stretch last:border-b border-border'
-		{...props}
-	>
-		<div className='border-r border-border p-1 text-center w-8 whitespace-pre flex-shrink-0'>
-			{(working_dir + index).trim()}
-		</div>
-		<div className='p-1 overflow-hidden text-ellipsis whitespace-nowrap'>{path}</div>
-	</CompositeItem>
 )
 
 type FilePanelBaseProps = {

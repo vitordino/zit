@@ -15,11 +15,15 @@ import FolderDot from 'src/renderer/icons/folder-dot.svg'
 import FolderGit from 'src/renderer/icons/folder-git.svg'
 import History from 'src/renderer/icons/history.svg'
 import Package from 'src/renderer/icons/package.svg'
+import SquareCode from 'src/renderer/icons/square-code.svg'
+import SquareDashed from 'src/renderer/icons/square-dashed.svg'
+import SquareDivide from 'src/renderer/icons/square-divide.svg'
 import SquareDot from 'src/renderer/icons/square-dot.svg'
 import SquareMinus from 'src/renderer/icons/square-minus.svg'
 import SquarePlus from 'src/renderer/icons/square-plus.svg'
-import UndoDot from 'src/renderer/icons/undo-dot.svg'
+import SquareX from 'src/renderer/icons/square-x.svg'
 import SwatchBook from 'src/renderer/icons/swatch-book.svg'
+import UndoDot from 'src/renderer/icons/undo-dot.svg'
 
 const ICON_MAP = {
 	'arrow-down-to-line': ArrowDownToLine,
@@ -31,14 +35,18 @@ const ICON_MAP = {
 	'corner-down-left': CornerDownLeft,
 	'folder-dot': FolderDot,
 	'folder-git': FolderGit,
+	'square-code': SquareCode,
+	'square-dashed': SquareDashed,
+	'square-divide': SquareDivide,
 	'square-dot': SquareDot,
 	'square-minus': SquareMinus,
 	'square-plus': SquarePlus,
+	'square-x': SquareX,
+	'swatch-book': SwatchBook,
 	'undo-dot': UndoDot,
 	branch: Branch,
 	history: History,
 	package: Package,
-	'swatch-book': SwatchBook,
 } as const
 
 export type IconId = keyof typeof ICON_MAP
