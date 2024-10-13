@@ -48,6 +48,7 @@ export type GitAction = { path: string } & (
 	| { type: 'GIT:UNSTAGE_ALL' }
 	| { type: 'GIT:COMMIT'; payload: string }
 	| { type: 'GIT:UNDO_COMMIT'; payload: string }
+	| { type: 'GIT:DISCARD_FILE_CHANGES'; payload: string }
 	| { type: 'GIT:PUSH' }
 	| { type: 'GIT:PULL' }
 )

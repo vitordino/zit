@@ -255,6 +255,25 @@ const undoCommit: Middleware = store => next => async action => {
 	}
 }
 
+const discardFileChanges: Middleware = store => next => async action => {
+	if (action.type !== 'GIT:DISCARD_FILE_CHANGES') return next(action)
+	try {
+		await simpleGit({ baseDir: action.path }).checkout(action.payload)
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	} catch (e) {
+		console.log({ e })
+		next({
+			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
+			payload: {
+				id: nanoid(),
+				parent: `git:${action.path}`,
+				body: `issue discarding file changes for: ${action.payload}`,
+			},
+		})
+		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+	}
+}
+
 const push: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:PUSH') return next(action)
 	try {
@@ -312,6 +331,7 @@ const GIT_ACTION_MAP: Partial<Record<GitAction['type'], Middleware>> = {
 	'GIT:UNDO_COMMIT': undoCommit,
 	'GIT:PUSH': push,
 	'GIT:PULL': pull,
+	'GIT:DISCARD_FILE_CHANGES': discardFileChanges,
 }
 
 export const gitMiddleware: Middleware = store => next => async action => {

@@ -6,10 +6,12 @@ import {
 	CompositeItem,
 	CompositeGroup,
 	CompositeGroupLabel,
+	CompositeItemProps,
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
 import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
+import { ContextMenu, ContextMenuItem } from 'src/renderer/components/ContextMenu'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
@@ -18,12 +20,20 @@ const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
 	</CompositeGroupLabel>
 )
 
-type FileItemProps = FileStatusResult & { onClick?: () => void }
-const FileItem = ({ path, working_dir, index, onClick }: FileItemProps) => (
+type UnstagedContextMenuProps = { onStage?: () => void; onDiscardChanges?: () => void }
+const UnstagedContextMenu = ({ onStage, onDiscardChanges }: UnstagedContextMenuProps) => (
+	<>
+		<ContextMenuItem onClick={onStage}>stage</ContextMenuItem>
+		<ContextMenuItem onClick={onDiscardChanges}>discard changes</ContextMenuItem>
+	</>
+)
+
+type FileItemProps = FileStatusResult & CompositeItemProps
+const FileItem = ({ path, working_dir, index, from: _from, ...props }: FileItemProps) => (
 	<CompositeItem
 		itemID={path}
 		className='w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected flex items-stretch last:border-b border-border'
-		onClick={onClick}
+		{...props}
 	>
 		<div className='border-r border-border p-1 text-center w-8 whitespace-pre flex-shrink-0'>
 			{(working_dir + index).trim()}
@@ -32,25 +42,19 @@ const FileItem = ({ path, working_dir, index, onClick }: FileItemProps) => (
 	</CompositeItem>
 )
 
-type FileListProps = {
-	items?: FileStatusResult[]
-	onItemClick?: (item: FileStatusResult) => void
-}
-const FileList = ({ items, onItemClick }: FileListProps) => (
-	<>{items?.map(x => <FileItem onClick={() => onItemClick?.(x)} key={x.path} {...x} />)}</>
-)
-
 type FilePanelBaseProps = {
 	status?: GitStatus
-	onUnstagedItemClick?: (item: FileStatusResult) => void
-	onStagedItemClick?: (item: FileStatusResult) => void
+	onStage?: (item: FileStatusResult) => void
+	onUnstage?: (item: FileStatusResult) => void
+	onDiscard?: (item: FileStatusResult) => void
 	onStageAll?: () => void
 	onUnstageAll?: () => void
 }
 export const FilePanelBase = ({
 	status,
-	onUnstagedItemClick,
-	onStagedItemClick,
+	onStage,
+	onUnstage,
+	onDiscard,
 	onStageAll,
 	onUnstageAll,
 }: FilePanelBaseProps) => {
@@ -72,7 +76,21 @@ export const FilePanelBase = ({
 							stage all
 						</CompositeItem>
 					</div>
-					<FileList items={unstaged} onItemClick={onUnstagedItemClick} />
+					{unstaged?.map(x => (
+						<ContextMenu
+							key={x.path}
+							menu={
+								<UnstagedContextMenu
+									onStage={() => onStage?.(x)}
+									onDiscardChanges={() => onDiscard?.(x)}
+								/>
+							}
+						>
+							{({ onContextMenu }) => (
+								<FileItem onClick={() => onStage?.(x)} onContextMenu={onContextMenu} {...x} />
+							)}
+						</ContextMenu>
+					))}
 				</CompositeGroup>
 
 				<CompositeGroup className='ring-border basis-1/2 flex-grow-0 ring-1 overflow-auto scroll-pt-7'>
@@ -85,7 +103,21 @@ export const FilePanelBase = ({
 							unstage all
 						</CompositeItem>
 					</div>
-					<FileList items={staged} onItemClick={onStagedItemClick} />
+					{staged?.map(x => (
+						<ContextMenu
+							key={x.path}
+							menu={<ContextMenuItem onClick={() => onUnstage?.(x)}>unstage</ContextMenuItem>}
+						>
+							{({ onContextMenu }) => (
+								<FileItem
+									onClick={() => onUnstage?.(x)}
+									key={x.path}
+									onContextMenu={onContextMenu}
+									{...x}
+								/>
+							)}
+						</ContextMenu>
+					))}
 				</CompositeGroup>
 			</Composite>
 		</CompositeProvider>
@@ -97,16 +129,18 @@ export const FilePanel = () => {
 	const path = useGitPath()
 	const dispatch = useDispatch()
 
-	const onStagedItemClick = (item: FileStatusResult) => {
+	const onUnstage = (item: FileStatusResult) => {
 		if (!path) return
 		dispatch({ type: 'GIT:UNSTAGE', path, payload: item.path })
 	}
-
-	const onUnstagedItemClick = (item: FileStatusResult) => {
+	const onStage = (item: FileStatusResult) => {
 		if (!path) return
 		dispatch({ type: 'GIT:STAGE', path, payload: item.path })
 	}
-
+	const onDiscard = (item: FileStatusResult) => {
+		if (!path) return
+		dispatch({ type: 'GIT:DISCARD_FILE_CHANGES', path, payload: item.path })
+	}
 	const onStageAll = () => {
 		if (!path) return
 		dispatch({ type: 'GIT:STAGE_ALL', path })
@@ -119,10 +153,11 @@ export const FilePanel = () => {
 	return (
 		<FilePanelBase
 			status={status}
-			onStagedItemClick={onStagedItemClick}
-			onUnstagedItemClick={onUnstagedItemClick}
+			onStage={onStage}
+			onUnstage={onUnstage}
 			onStageAll={onStageAll}
 			onUnstageAll={onUnstageAll}
+			onDiscard={onDiscard}
 		/>
 	)
 }

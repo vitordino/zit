@@ -8,7 +8,6 @@
 
 > not in any specific order
 
-- [ ] right click to revert not staged changes
 - [ ] hotkeys (using electron menubar)
 - [ ] command palette
 - [ ] progress indicator + disabled state (for pull/push etc)
