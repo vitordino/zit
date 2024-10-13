@@ -16,7 +16,7 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 			<Composite className='group max-h-24 overflow-auto outline-none'>
 				{log.all.map((x, i) => (
 					<CompositeItem
-						className='flex content-between items-center w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected px-2 text-xs '
+						className='flex content-between items-center w-full text-left outline-none hover:bg-element-hover group-focus-visible:data-[active-item=true]:bg-element-selected px-2 text-xs '
 						render={y => <div {...y} />}
 						key={x.hash}
 					>
