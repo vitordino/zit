@@ -3,7 +3,7 @@ import { createUseStore } from 'reduxtron/zustand-store'
 import type { Action, State } from 'src/shared/reducers'
 import type { GitRepo } from 'src/shared/reducers/git'
 
-export const getGitPath = (): string | null => globalThis.sessionStorage.getItem('git-path')
+export const getGitPath = (): string | null => globalThis.gitPath
 export const useGitPath = getGitPath
 
 export const useStore = createUseStore<State, Action>(window.reduxtron)
