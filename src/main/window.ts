@@ -27,7 +27,6 @@ export const createWindow = ({ gitPath }: { gitPath: string }) => {
 	mainWindow.setTitle(gitPath)
 	mainWindow.webContents.executeJavaScript(`
 	  globalThis.sessionStorage.setItem('git-path', '${gitPath}')
-		globalThis.gitPath = '${gitPath}'
 	`)
 
 	ipcMain.on('subscribe', async (state: unknown) => {

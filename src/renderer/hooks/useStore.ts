@@ -1,11 +1,11 @@
+import { useContext } from 'react'
 import type { UseBoundStore } from 'zustand'
 import { createUseStore } from 'reduxtron/zustand-store'
 import type { Action, State } from 'src/shared/reducers'
 import type { GitRepo } from 'src/shared/reducers/git'
+import { GitPathContext } from 'src/renderer/contexts/gitPath'
 
-export const getGitPath = (): string | null => globalThis.gitPath
-export const useGitPath = getGitPath
-
+export const useGitPath = () => useContext(GitPathContext)
 export const useStore = createUseStore<State, Action>(window.reduxtron)
 
 type UseGitStore = UseBoundStore<{
