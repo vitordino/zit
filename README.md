@@ -13,7 +13,6 @@
 - [ ] progress indicator + disabled state (for pull/push etc)
 - [ ] branding
 - [ ] release pipeline (using github actions)
-- [ ] icons
 - [ ] show remote branches
 - [ ] checkout remote branches locally
 - [ ] settings page

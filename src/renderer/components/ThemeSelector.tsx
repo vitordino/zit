@@ -6,7 +6,7 @@ import { ALL_THEMES, Theme } from 'zedwind/constants'
 
 import { DEFAULT_THEME } from 'src/shared/reducers/settings'
 import { useDispatch, useStore } from 'src/renderer/hooks/useStore'
-import { StatusBarButton } from 'src/renderer/components/Button'
+import { IconButton } from 'src/renderer/components/Button'
 
 const setDocumentTheme = (theme: Theme) =>
 	document.documentElement.setAttribute('data-theme', theme)
@@ -31,7 +31,7 @@ export const ThemeSelectorBase = ({ theme, setTheme }: ThemeSelectorBaseProps) =
 
 	return (
 		<>
-			<StatusBarButton onClick={dialog.show}>theme</StatusBarButton>
+			<IconButton iconId='swatch-book' tooltip='change theme' onClick={dialog.show} />
 			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-50' />}>
 				<div className='p-2 absolute left-0 right-0 top-0 bottom-0'>
 					<ComboboxProvider

@@ -5,7 +5,7 @@ import { Combobox, ComboboxItem, ComboboxProvider, ComboboxPopover } from '@aria
 import { matchSorter } from 'match-sorter'
 
 import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
-import { StatusBarButton } from 'src/renderer/components/Button'
+import { HeaderButton } from 'src/renderer/components/Button'
 
 type BranchSelectorBaseProps = {
 	branches: BranchSummaryBranch[]
@@ -24,9 +24,9 @@ export const BranchSelectorBase = ({ branches, setBranch }: BranchSelectorBasePr
 
 	return (
 		<>
-			<StatusBarButton className='text-text-muted' onClick={dialog.show}>
+			<HeaderButton className='text-text-muted' onClick={dialog.show}>
 				{currentBranch?.name || `branch`}
-			</StatusBarButton>
+			</HeaderButton>
 			<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-50' />}>
 				<div className='p-2 absolute left-0 right-0 top-0 bottom-0'>
 					<ComboboxProvider

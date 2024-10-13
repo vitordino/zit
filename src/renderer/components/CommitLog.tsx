@@ -5,6 +5,7 @@ import { getRelativeTimeString } from 'src/shared/lib/time'
 import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
 import { useIsLogVisible } from 'src/renderer/hooks/useIsLogVisible'
 import { useCommitMessage } from 'src/renderer/hooks/useCommitMessage'
+import { IconButton } from 'src/renderer/components/Button'
 
 type CommitLogBaseProps = { log?: GitLog['data']; onUndo: (hex: string) => void }
 export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
@@ -21,12 +22,12 @@ export const CommitLogBase = ({ log, onUndo }: CommitLogBaseProps) => {
 					>
 						<div className='flex-1 leading-6 py-1'>{x.message}</div>
 						{!i && (
-							<button
+							<IconButton
+								iconId='undo-dot'
 								onClick={() => onUndo(x.hash)}
-								className='focus-visible:bg-terminal-ansi-bright-red focus-visible:text-terminal-ansi-dim-red hover:bg-terminal-ansi-bright-red hover:text-terminal-ansi-dim-red text-terminal-ansi-red self-stretch px-3 mx-2 outline-none'
-							>
-								undo
-							</button>
+								tooltip='undo'
+								className='mx-2'
+							/>
 						)}
 						<time>{getRelativeTimeString(new Date(x.date))}</time>
 					</CompositeItem>
@@ -47,6 +48,6 @@ export const CommitLog = () => {
 		setCommitMessage(log?.latest?.message ?? '')
 		dispatch({ type: 'GIT:UNDO_COMMIT', path, payload })
 	}
-	if (isLogVisible) return null
+	if (!isLogVisible) return null
 	return <CommitLogBase log={log} onUndo={onUndo} />
 }

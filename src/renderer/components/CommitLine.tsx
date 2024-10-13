@@ -1,6 +1,6 @@
 import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
 import { useIsLogVisible } from 'src/renderer/hooks/useIsLogVisible'
-import { CommitLineButton } from 'src/renderer/components/Button'
+import { IconButton } from 'src/renderer/components/Button'
 import { CommitInput } from 'src/renderer/components/CommitInput'
 
 type CommitLineBaseProps = {
@@ -11,6 +11,7 @@ type CommitLineBaseProps = {
 	onPull: () => void
 	onPush: () => void
 }
+
 export const CommitLineBase = ({
 	log,
 	toggleLog,
@@ -19,13 +20,29 @@ export const CommitLineBase = ({
 	onPull,
 	onPush,
 }: CommitLineBaseProps) => (
-	<div className='flex'>
-		<CommitLineButton data-active={log} onClick={toggleLog} className='ml-0'>
-			log
-		</CommitLineButton>
+	<div className='flex bg-editor-subheader-background items-center ring-1 ring-border ring-inset'>
+		<IconButton
+			tooltip='log'
+			iconId='history'
+			state={log ? 'highlight' : 'default'}
+			onClick={toggleLog}
+			className='mx-2'
+		/>
 		<CommitInput />
-		{!!behind && <CommitLineButton onClick={onPull}>pull&nbsp;{behind}</CommitLineButton>}
-		{!!ahead && <CommitLineButton onClick={onPush}>push&nbsp;{ahead}</CommitLineButton>}
+		{(!!behind || !!ahead) && (
+			<div className='mx-1 flex items-center'>
+				{!!behind && (
+					<IconButton className='mx-1' tooltip='pull' iconId='cloud-download' onClick={onPull}>
+						{behind}
+					</IconButton>
+				)}
+				{!!ahead && (
+					<IconButton className='mx-1' tooltip='push' iconId='cloud-upload' onClick={onPush}>
+						{ahead}
+					</IconButton>
+				)}
+			</div>
+		)}
 	</div>
 )
 

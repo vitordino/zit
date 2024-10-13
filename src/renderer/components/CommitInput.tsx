@@ -1,7 +1,7 @@
 import { FormEvent } from 'react'
 import { useDispatch, useGitStore } from 'src/renderer/hooks/useStore'
 import { useCommitMessage } from 'src/renderer/hooks/useCommitMessage'
-import { CommitLineButton } from 'src/renderer/components/Button'
+import { IconButton } from 'src/renderer/components/Button'
 
 type CommitInputBaseProps = {
 	onCommit?: (message: string) => void
@@ -21,9 +21,12 @@ export const CommitInputBase = ({
 		setMessage('')
 	}
 	return (
-		<form className='w-full flex items-stretch bg-editor-subheader-background' onSubmit={onSubmit}>
+		<form
+			className='flex-1 self-stretch flex items-center border-l border-r border-border-variant pr-2'
+			onSubmit={onSubmit}
+		>
 			<textarea
-				className='flex-1 bg-editor-subheader-background resize-none outline-none px-2 py-[6px] placeholder:text-text-muted ring-1 ring-border whitespace-nowrap w-0'
+				className='flex-1 resize-none outline-none px-2 py-[6px] placeholder:text-text-muted whitespace-nowrap w-0 border-none'
 				value={message}
 				onChange={e => setMessage(e.target.value)}
 				placeholder='commit message'
@@ -33,9 +36,12 @@ export const CommitInputBase = ({
 					setMessage('')
 				}}
 			/>
-			<CommitLineButton type='submit' disabled={!message.length || commitDisabled}>
-				commit
-			</CommitLineButton>
+			<IconButton
+				iconId='corner-down-left'
+				type='submit'
+				tooltip='commit'
+				disabled={!message.length || commitDisabled}
+			/>
 		</form>
 	)
 }

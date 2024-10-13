@@ -12,10 +12,12 @@ import {
 import type { GitStatus } from 'src/shared/reducers/git'
 import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
 import { ContextMenu, ContextMenuItem } from 'src/renderer/components/ContextMenu'
+import { Icon } from 'src/renderer/components/Icon'
+import { IconButton } from 'src/renderer/components/Button'
 
 type FilePanelTitleProps = { children?: ReactNode }
 const FilePanelTitle = ({ children }: FilePanelTitleProps) => (
-	<CompositeGroupLabel className='flex-1 border-border border-b px-2 py-1 sticky top-0 bg-editor-background text-text-muted'>
+	<CompositeGroupLabel className='flex-1 px-2 py-1 sticky top-0 text-text-muted flex items-center'>
 		{children}
 	</CompositeGroupLabel>
 )
@@ -67,14 +69,15 @@ export const FilePanelBase = ({
 				autoFocus
 			>
 				<CompositeGroup className='ring-border basis-1/2 flex-grow-0 ring-1 overflow-auto scroll-pt-7'>
-					<div className='flex w-full sticky top-0'>
-						<FilePanelTitle>unstaged changes</FilePanelTitle>
+					<div className='flex w-full items-center sticky top-0 border-border border-b bg-editor-background'>
+						<FilePanelTitle>
+							<Icon iconId='folder-dot' className='mr-2' /> unstaged changes
+						</FilePanelTitle>
 						<CompositeItem
-							className='border-border border-l border-b px-2 py-1 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 							onClick={onStageAll}
-						>
-							stage all
-						</CompositeItem>
+							className='mx-2'
+							render={<IconButton iconId='arrow-down-to-line' tooltip='stage all' />}
+						/>
 					</div>
 					{unstaged?.map(x => (
 						<ContextMenu
@@ -94,14 +97,15 @@ export const FilePanelBase = ({
 				</CompositeGroup>
 
 				<CompositeGroup className='ring-border basis-1/2 flex-grow-0 ring-1 overflow-auto scroll-pt-7'>
-					<div className='flex w-full sticky top-0'>
-						<FilePanelTitle>staged changes</FilePanelTitle>
+					<div className='flex items-center w-full sticky top-0 border-border border-b bg-editor-background'>
+						<FilePanelTitle>
+							<Icon iconId='folder-git' className='mr-2' /> staged changes
+						</FilePanelTitle>
 						<CompositeItem
-							className='border-border border-l border-b px-2 py-1 bg-editor-background outline-none hover:bg-element-hover group-focus-visible:data-[active-item="true"]:bg-element-selected group-focus-visible:data-[active-item="true"]:text-text text-text-muted hover:text-text'
 							onClick={onUnstageAll}
-						>
-							unstage all
-						</CompositeItem>
+							className='mx-2'
+							render={<IconButton iconId='arrow-up-from-line' tooltip='unstage all' />}
+						/>
 					</div>
 					{staged?.map(x => (
 						<ContextMenu
