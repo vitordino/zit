@@ -34,6 +34,7 @@ export const createWindow = async ({ gitPath }: { gitPath: string }) => {
 		show: false,
 		autoHideMenuBar: true,
 		titleBarStyle: 'hiddenInset',
+		fullscreenable: false,
 		trafficLightPosition: { x: 9, y: 9 },
 		titleBarOverlay: false,
 		frame: false,
