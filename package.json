@@ -24,6 +24,7 @@
 		"@ariakit/react": "^0.4.5",
 		"@electron-toolkit/preload": "^3.0.0",
 		"@electron-toolkit/utils": "^3.0.0",
+		"@parcel/watcher": "^2.4.1",
 		"@reduxjs/toolkit": "^2.2.2",
 		"clsx": "^2.1.1",
 		"match-sorter": "^6.3.4",
