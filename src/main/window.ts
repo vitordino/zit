@@ -1,4 +1,5 @@
 import { subscribe } from '@parcel/watcher'
+import throttle from 'lodash/throttle'
 import { shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
@@ -6,10 +7,11 @@ import { is } from '@electron-toolkit/utils'
 import icon from 'resources/icon.png?asset'
 import { store } from './store'
 
+const throttledDispatch = throttle(store.dispatch, 250, { leading: true, trailing: true })
 const watchRepository = async (path: string) => {
 	const subscription = await subscribe(
 		path,
-		error => !error && store.dispatch({ type: 'GIT:REFRESH', path }),
+		error => !error && throttledDispatch({ type: 'GIT:REFRESH', path }),
 		{ ignore: ['.git'] },
 	)
 	return subscription.unsubscribe
