@@ -20,10 +20,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 		if (tooltip) {
 			return (
 				<Ariakit.TooltipProvider>
-					<Ariakit.TooltipAnchor
-						className={className}
-						render={x => <Button {...x} {...props} ref={ref} />}
-					/>
+					<Ariakit.TooltipAnchor className={className} render={<Button {...props} ref={ref} />} />
 					<Ariakit.Tooltip className='py-1 px-2 text-sm bg-panel-background border border-border-variant rounded-md'>
 						{tooltip}
 					</Ariakit.Tooltip>
@@ -34,7 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			<button
 				ref={ref}
 				className={cn(
-					'disabled:text-text-disabled text-text leading-none text-xs outline-none p-1 hover:bg-background active:bg-element-active data-[state="highlight"]:text-text-accent focus-visible:bg-element-active ml-[1px] flex-shrink-0 rounded-md flex items-center cursor-pointer disabled:cursor-not-allowed',
+					'disabled:text-text-disabled text-text leading-none text-xs outline-none p-1 hover:bg-background active:bg-element-active data-[state="highlight"]:text-text-accent focus-visible:bg-element-active data-[focus-visible]:bg-element-active ml-[1px] flex-shrink-0 rounded-md flex items-center cursor-pointer disabled:cursor-not-allowed',
 					className,
 				)}
 				{...props}

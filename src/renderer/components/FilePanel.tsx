@@ -6,12 +6,13 @@ import {
 	CompositeItem,
 	CompositeGroup,
 	CompositeGroupLabel,
+	useCompositeContext,
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
 import { useDispatch, useGitPath, useGitStore } from 'src/renderer/hooks/useStore'
 import { ContextMenu, ContextMenuItem } from 'src/renderer/components/ContextMenu'
-import { Icon } from 'src/renderer/components/Icon'
+import { Icon, IconId } from 'src/renderer/components/Icon'
 import { IconButton } from 'src/renderer/components/Button'
 import { FileItem } from 'src/renderer/components/FileItem'
 
@@ -38,6 +39,30 @@ type FilePanelBaseProps = {
 	onStageAll?: () => void
 	onUnstageAll?: () => void
 }
+
+type ActionButtonProps = {
+	disabled?: boolean
+	onClick?: () => void
+	iconId: IconId
+	tooltip?: ReactNode
+}
+const ActionButton = ({ disabled, onClick, iconId, tooltip }: ActionButtonProps) => {
+	const store = useCompositeContext()
+	return (
+		<CompositeItem
+			{...store}
+			onClick={() => {
+				onClick?.()
+				store?.move(store?.next())
+			}}
+			tabbable
+			className='mx-2'
+			disabled={disabled}
+			render={<IconButton iconId={iconId} tooltip={tooltip} />}
+		/>
+	)
+}
+
 export const FilePanelBase = ({
 	status,
 	onStage,
@@ -59,10 +84,11 @@ export const FilePanelBase = ({
 						<FilePanelTitle>
 							<Icon iconId='folder-dot' className='mr-2' /> unstaged changes
 						</FilePanelTitle>
-						<CompositeItem
+						<ActionButton
 							onClick={onStageAll}
-							className='mx-2'
-							render={<IconButton iconId='arrow-down-to-line' tooltip='stage all' />}
+							disabled={!unstaged?.length}
+							iconId='arrow-down-to-line'
+							tooltip='stage all'
 						/>
 					</div>
 					{unstaged?.map(x => (
@@ -87,10 +113,11 @@ export const FilePanelBase = ({
 						<FilePanelTitle>
 							<Icon iconId='folder-git' className='mr-2' /> staged changes
 						</FilePanelTitle>
-						<CompositeItem
+						<ActionButton
 							onClick={onUnstageAll}
-							className='mx-2'
-							render={<IconButton iconId='arrow-up-from-line' tooltip='unstage all' />}
+							disabled={!staged?.length}
+							iconId='arrow-up-from-line'
+							tooltip='unstage all'
 						/>
 					</div>
 					{staged?.map(x => (
