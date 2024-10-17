@@ -7,8 +7,8 @@ import { is } from '@electron-toolkit/utils'
 import icon from 'resources/icon.png?asset'
 import { store } from './store'
 
-const throttledDispatch = throttle(store.dispatch, 250, { leading: true, trailing: true })
 const watchRepository = async (path: string) => {
+	const throttledDispatch = throttle(store.dispatch, 250, { leading: true, trailing: true })
 	const subscription = await subscribe(
 		path,
 		error => !error && throttledDispatch({ type: 'GIT:REFRESH', path }),
