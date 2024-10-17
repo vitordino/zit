@@ -7,8 +7,8 @@ export const NotInitializedModal = () => {
 	const dispatch = useDispatch()
 	const open = state === 'not_initialized'
 	const dialog = useDialogStore({ open })
-	const close = () => dispatch({ type: 'GIT:CLOSE', path })
-	const initialize = () => dispatch({ type: 'GIT:INITIALIZE', path })
+	const close = () => path && dispatch({ type: 'GIT:CLOSE', path })
+	const initialize = () => path && dispatch({ type: 'GIT:INITIALIZE', path })
 	return (
 		<Dialog store={dialog} backdrop={<div className='fixed inset-0 bg-background opacity-50' />}>
 			<div className='p-2 absolute left-0 right-0 top-0 bottom-0'>
