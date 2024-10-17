@@ -5,12 +5,15 @@ import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
 	main: {
+		esbuild: { target: 'node20' },
 		plugins: [tsconfigPaths(), externalizeDepsPlugin({ exclude: ['nanoid'] })],
 	},
 	preload: {
+		esbuild: { target: ['node20', 'chrome130'] },
 		plugins: [tsconfigPaths(), externalizeDepsPlugin({ exclude: ['reduxtron'] })],
 	},
 	renderer: {
+		esbuild: { target: 'chrome130' },
 		plugins: [
 			tsconfigPaths(),
 			react(),
