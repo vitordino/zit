@@ -37,4 +37,5 @@
 huge props for the zed folks to come up with a brilliant piece of technology,
 and also [atom](https://atom-editor.cc/) for guiding a lot of the initial ux sketches.
 
-this repo is also a playground for some personal libraries like [`zedwind`](https://github.com/vitordino/zedwind) and [`reduxtron`](https://github.com/vitordino/reduxtron).
+this project heavily relies on [`electron`](https://www.electronjs.org/), [`react`](https://react.dev), [`ariakit`](https://ariakit.org/) and [`tailwindcss`](https://tailwindcss.com/).
+and acts as a playground for some personal libraries like [`zedwind`](https://github.com/vitordino/zedwind) and [`reduxtron`](https://github.com/vitordino/reduxtron).
