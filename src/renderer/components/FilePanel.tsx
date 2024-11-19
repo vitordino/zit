@@ -6,7 +6,7 @@ import {
 	CompositeItem,
 	CompositeGroup,
 	CompositeGroupLabel,
-	useCompositeContext,
+	useCompositeStore,
 } from '@ariakit/react/composite'
 
 import type { GitStatus } from 'src/shared/reducers/git'
@@ -46,22 +46,7 @@ type ActionButtonProps = {
 	iconId: IconId
 	tooltip?: ReactNode
 }
-const ActionButton = ({ disabled, onClick, iconId, tooltip }: ActionButtonProps) => {
-	const store = useCompositeContext()
-	return (
-		<CompositeItem
-			{...store}
-			onClick={() => {
-				onClick?.()
-				store?.move(store?.next())
-			}}
-			tabbable
-			className='mx-2'
-			disabled={disabled}
-			render={<IconButton iconId={iconId} tooltip={tooltip} />}
-		/>
-	)
-}
+const ActionButton = (props: ActionButtonProps) => <IconButton {...props} className='mx-2' />
 
 export const FilePanelBase = ({
 	status,
@@ -71,10 +56,32 @@ export const FilePanelBase = ({
 	onStageAll,
 	onUnstageAll,
 }: FilePanelBaseProps) => {
+	const store = useCompositeStore()
 	const unstaged = status?.data?.files.filter(x => x.working_dir !== ' ')
 	const staged = status?.data?.files.filter(x => x.index !== ' ' && x.working_dir !== '?')
+
+	const handleStage = (item: FileStatusResult) => {
+		onStage?.(item)
+		store.move(store.previous() || store.next())
+	}
+	const handleUnstage = (item: FileStatusResult) => {
+		onUnstage?.(item)
+		store.move(store.next() || store.previous())
+	}
+	const handleDiscard = (item: FileStatusResult) => {
+		onDiscard?.(item)
+		store.move(store.previous() || store.next())
+	}
+	const handleStageAll = () => {
+		onStageAll?.()
+		store.move(store.previous() || store.next())
+	}
+	const handleUnstageAll = () => {
+		onUnstageAll?.()
+		store.move(store.previous() || store.next())
+	}
 	return (
-		<CompositeProvider focusLoop virtualFocus>
+		<CompositeProvider store={store} focusLoop virtualFocus>
 			<Composite
 				className='group flex-1 flex flex-col outline-none overflow-clip scroll-pt-8'
 				autoFocus
@@ -85,7 +92,7 @@ export const FilePanelBase = ({
 							<Icon iconId='folder-dot' className='mr-2' /> unstaged changes
 						</FilePanelTitle>
 						<ActionButton
-							onClick={onStageAll}
+							onClick={handleStageAll}
 							disabled={!unstaged?.length}
 							iconId='arrow-down-to-line'
 							tooltip='stage all'
@@ -96,13 +103,13 @@ export const FilePanelBase = ({
 							key={x.path}
 							menu={
 								<UnstagedContextMenu
-									onStage={() => onStage?.(x)}
-									onDiscardChanges={() => onDiscard?.(x)}
+									onStage={() => handleStage?.(x)}
+									onDiscardChanges={() => handleDiscard?.(x)}
 								/>
 							}
 						>
 							{({ onContextMenu }) => (
-								<FileItem onClick={() => onStage?.(x)} onContextMenu={onContextMenu} {...x} />
+								<FileItem onClick={() => handleStage?.(x)} onContextMenu={onContextMenu} {...x} />
 							)}
 						</ContextMenu>
 					))}
@@ -114,7 +121,7 @@ export const FilePanelBase = ({
 							<Icon iconId='folder-git' className='mr-2' /> staged changes
 						</FilePanelTitle>
 						<ActionButton
-							onClick={onUnstageAll}
+							onClick={handleUnstageAll}
 							disabled={!staged?.length}
 							iconId='arrow-up-from-line'
 							tooltip='unstage all'
@@ -123,11 +130,11 @@ export const FilePanelBase = ({
 					{staged?.map(x => (
 						<ContextMenu
 							key={x.path}
-							menu={<ContextMenuItem onClick={() => onUnstage?.(x)}>unstage</ContextMenuItem>}
+							menu={<ContextMenuItem onClick={() => handleUnstage?.(x)}>unstage</ContextMenuItem>}
 						>
 							{({ onContextMenu }) => (
 								<FileItem
-									onClick={() => onUnstage?.(x)}
+									onClick={() => handleUnstage?.(x)}
 									key={x.path}
 									onContextMenu={onContextMenu}
 									{...x}
