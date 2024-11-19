@@ -258,10 +258,17 @@ const undoCommit: Middleware = store => next => async action => {
 const discardFileChanges: Middleware = store => next => async action => {
 	if (action.type !== 'GIT:DISCARD_FILE_CHANGES') return next(action)
 	try {
-		await simpleGit({ baseDir: action.path }).checkout(action.payload)
-		return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+		try {
+			// for tracked files: use git checkout
+			await simpleGit({ baseDir: action.path }).checkout(action.payload)
+			return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+		} catch (e) {
+			// for untracked files: use git clean
+			await simpleGit({ baseDir: action.path }).clean('fd', ['--', action.payload])
+			return refresh(store)(next)({ type: 'GIT:REFRESH', path: action.path })
+		}
 	} catch (e) {
-		console.log({ e })
+		console.log({ discardFileChangesError: e })
 		next({
 			type: 'NOTIFICATIONS:ADD_NOTIFICATION',
 			payload: {
