@@ -1,3 +1,8 @@
+> [!NOTE]  
+> [zed released it’s own git panel](https://zed.dev/blog/git), so this project won’t have that much use for me anymore.
+> 
+> it still works, but since i really enjoyed the native one this won’t receive further updates.
+
 # zit
 
 > a fan-made [zed](https://zed.dev/)-inspired feature-light git companion
